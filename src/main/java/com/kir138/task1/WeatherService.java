@@ -1,8 +1,6 @@
 package com.kir138.task1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kir138.task1.Location;
-import com.kir138.task1.WeatherResponse;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

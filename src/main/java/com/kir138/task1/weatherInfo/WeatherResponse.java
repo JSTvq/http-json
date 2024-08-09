@@ -1,4 +1,4 @@
-package com.kir138.task1;
+package com.kir138.task1.weatherInfo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

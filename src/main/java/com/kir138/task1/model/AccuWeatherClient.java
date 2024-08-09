@@ -1,21 +1,24 @@
-package com.kir138.task1;
+package com.kir138.task1.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kir138.task1.weatherInfo.Location;
+import com.kir138.task1.weatherInfo.WeatherResponse;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-public class WeatherService {
+public class AccuWeatherClient {
+
+    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV";
 
     private final OkHttpClient okHttpClient;
-    private final String apiKey;
     private final ObjectMapper objectMapper;
 
-    public WeatherService(String apiKey) {
-        this.apiKey = apiKey;
+    public AccuWeatherClient() {
         okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -61,5 +64,11 @@ public class WeatherService {
             return objectMapper.readValue(jsonData, WeatherResponse.class);
         }
         return null;
+        }
+
+        public String inputCity() {
+            System.out.println("В каком городе нужно узнать погоду?");
+            Scanner scanner = new Scanner(System.in);
+            return scanner.next();
         }
     }

@@ -1,5 +1,8 @@
 package com.kir138.task1;
 
+import com.kir138.task1.model.AccuWeatherClient;
+import com.kir138.task1.service.WeatherService;
+
 import java.io.IOException;
 
 public class Main {
@@ -14,8 +17,8 @@ public class Main {
          * где CITY, DATE, WEATHER_TEXT и TEMPERATURE - уникальные значения для каждого дня.
          */
 
-        String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV";
-        WeatherApp weatherApp = new WeatherApp(apiKey);
-        weatherApp.run(args);
+        AccuWeatherClient accuWeatherClient = new AccuWeatherClient();
+        WeatherService weatherService = new WeatherService(accuWeatherClient);
+        weatherService.run(args);
     }
 }

@@ -5,7 +5,7 @@ import com.kir138.task1.service.WeatherService;
 
 import java.io.IOException;
 
-public class Main {
+public class App {
     public static void main(String[] args) throws IOException {
         /**
          * Реализовать корректный вывод информации о текущей погоде. Создать класс WeatherResponse
@@ -19,6 +19,10 @@ public class Main {
 
         AccuWeatherClient accuWeatherClient = new AccuWeatherClient();
         WeatherService weatherService = new WeatherService(accuWeatherClient);
-        weatherService.run(args);
+
+        weatherService.run();
+        /*for (int i = 0; i < 5; i++) {
+            weatherService.run();
+        }*/
     }
 }

@@ -1,4 +1,4 @@
-package com.kir138.task1.model;
+package com.kir138.task1.model.dto;
 
 import lombok.*;
 
@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor(force = true)
 @Builder
 @Data
-public class City {
+public class CityDto {
     private final Long id;
     private final String cityName;
     private final String country;

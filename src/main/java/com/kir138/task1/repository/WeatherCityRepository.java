@@ -3,9 +3,6 @@ package com.kir138.task1.repository;
 import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.sqlConnect.PgConnect;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

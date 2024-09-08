@@ -5,8 +5,6 @@ import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.repository.WeatherCityRepository;
 import com.kir138.task1.service.WeatherService;
-import com.kir138.task1.sqlConnect.PgConnect;
-import okhttp3.Connection;
 import okhttp3.OkHttpClient;
 import java.util.concurrent.TimeUnit;
 

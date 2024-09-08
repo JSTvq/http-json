@@ -8,7 +8,7 @@ public class PgConnect {
 
     private final static String url = "jdbc:postgresql://localhost:5432/postgres";
     private final static String username = "postgres";
-    private final static String password = "12341234";
+    private final static String password = "123123";
 
     private static Connection CONNECTION;
 

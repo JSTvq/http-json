@@ -2,7 +2,7 @@ package com.kir138.task1.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kir138.task1.model.dto.CityDto;
-import com.kir138.task1.model.dto.Location2;
+import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;
@@ -45,7 +45,7 @@ public class AccuWeatherClient {
         }
         assert response.body() != null;
         String jsonData = response.body().string();
-        Location2[] locations = objectMapper.readValue(jsonData, Location2[].class);
+        LocationResponse[] locations = objectMapper.readValue(jsonData, LocationResponse[].class);
         if (locations == null || locations.length == 0) {
             throw new IOException("Не найдена локация");
         }
@@ -77,7 +77,7 @@ public class AccuWeatherClient {
 
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) {
-            System.out.println("что-то неудачное");
+            System.out.println("Не удалось получить прогноз погоды для ключа локации: " + locationKey);
         }
         assert response.body() != null;
         String jsonData = response.body().string();
@@ -101,14 +101,14 @@ public class AccuWeatherClient {
 
         Response response = okHttpClient.newCall(request).execute();
         if (!response.isSuccessful()) {
-            System.out.println("что-то пошло не так");
+            System.out.println("Не удалось получить список топ городов");
         }
         assert response.body() != null;
         String topCities = response.body().string();
-        Location2[] locations = objectMapper.readValue(topCities, Location2[].class);
+        LocationResponse[] locations = objectMapper.readValue(topCities, LocationResponse[].class);
 
         List<CityDto> cityDtoList = new ArrayList<>();
-        for (Location2 location : locations) {
+        for (LocationResponse location : locations) {
             System.out.println(location.getLocalizedName());
             cityDtoList.add(CityDto.builder()
                     .cityName(location.getLocalizedName())

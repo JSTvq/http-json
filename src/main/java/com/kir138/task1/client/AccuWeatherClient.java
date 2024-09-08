@@ -1,9 +1,8 @@
 package com.kir138.task1.client;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kir138.task1.model.dto.CityDto;
-import com.kir138.task1.model.dto.Location;
+import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import lombok.RequiredArgsConstructor;
 import okhttp3.HttpUrl;
@@ -24,7 +23,9 @@ public class AccuWeatherClient {
     private final ObjectMapper objectMapper;
 
     public String getLocationKey(String city) throws IOException {
-        HttpUrl build = new HttpUrl.Builder()
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
                 .host(ACCUWEATHER_HOST)
                 .addPathSegment("locations")
                 .addPathSegment("v1")
@@ -35,82 +36,85 @@ public class AccuWeatherClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(build)
+                .url(httpUrl)
                 .build();
 
-        /**
-         * Второй вариант использования кеша?
-         * Request request = new Request.Builder()
-         *                 .url(url)
-         *                 .cacheControl(new CacheControl.Builder()
-         *                         .maxAge(5, TimeUnit.MINUTES)
-         *                         .build())
-         *                 .build();
-         */
-
-        try (Response response = okHttpClient.newCall(request).execute();) {
-            if (response.isSuccessful()) {
-                assert response.body() != null;
-
-                String jsonData = response.body().string();
-
-                Location[] locations = objectMapper.readValue(jsonData, Location[].class);
-
-                if (locations.length > 0) {
-                    return locations[0].getKey();
-                }
-            }
+        Response response = okHttpClient.newCall(request).execute();
+        if (!response.isSuccessful()) {
+            throw new NullPointerException("Не найдена локация");
         }
-        //плохо
-        return null;
+        assert response.body() != null;
+        String jsonData = response.body().string();
+        LocationResponse[] locations = objectMapper.readValue(jsonData, LocationResponse[].class);
+        if (locations == null || locations.length == 0) {
+            throw new IOException("Не найдена локация");
+        }
+
+        if (locations[0].getKey() == null) {
+            throw new IOException("Не найдена локация");
+        }
+        return locations[0].getKey();
     }
 
     public WeatherResponse getWeatherForecast(String locationKey) throws IOException {
-        String url = "http://dataservice.accuweather.com/forecasts/v1/daily/5day/" + locationKey + "?apikey="
-                + apiKey + "&language=ru-ru&metric=true";
+
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ACCUWEATHER_HOST)
+                .addPathSegment("forecasts")
+                .addPathSegment("v1")
+                .addPathSegment("daily")
+                .addPathSegment("5day")
+                .addPathSegment(locationKey)
+                .addQueryParameter("apikey", apiKey)
+                .addQueryParameter("language", "ru-ru")
+                .addQueryParameter("metric", "true")
+                .build();
 
         Request request = new Request.Builder()
-                .url(url)
+                .url(httpUrl)
                 .build();
 
         Response response = okHttpClient.newCall(request).execute();
-        if (response.isSuccessful()) {
-            String jsonData = response.body().string();
-            return objectMapper.readValue(jsonData, WeatherResponse.class);
+        if (!response.isSuccessful()) {
+            System.out.println("что-то неудачное");
         }
-        throw new RuntimeException("Failed to get weather forecast");
+        assert response.body() != null;
+        String jsonData = response.body().string();
+        return objectMapper.readValue(jsonData, WeatherResponse.class);
     }
 
     public List<CityDto> getTopCities(int num) throws IOException {
-        String url = "http://dataservice.accuweather.com/locations/v1/topcities/" + num + "?apikey=" + apiKey;
-        Request request = new Request.Builder()
-                .url(url)
+        HttpUrl httpUrl = new HttpUrl.Builder()
+                .scheme("http")
+                .host(ACCUWEATHER_HOST)
+                .addPathSegment("locations")
+                .addPathSegment("v1")
+                .addPathSegment("topcities")
+                .addPathSegment(String.valueOf(num))
+                .addQueryParameter("apikey", apiKey)
                 .build();
-        System.out.println("Request: " + request);
+
+        Request request = new Request.Builder()
+                .url(httpUrl)
+                .build();
+
         Response response = okHttpClient.newCall(request).execute();
-        System.out.println("Response: " + response);
-
         if (!response.isSuccessful()) {
-            throw new RuntimeException("Failed to get top cities");
+            System.out.println("что-то пошло не так");
         }
-
+        assert response.body() != null;
         String topCities = response.body().string();
-        JsonNode jsonNode = objectMapper.readTree(topCities);
+        LocationResponse[] locations = objectMapper.readValue(topCities, LocationResponse[].class);
 
         List<CityDto> cityDtoList = new ArrayList<>();
-        for (JsonNode add : jsonNode) {
-            Long id = add.get("Key").asLong();
-            String country = add.get("LocalizedName").asText();
-            String cities = add.get("Country").get("LocalizedName").asText();
-            CityDto cityDto = CityDto.builder()
-                    .id(id)
-                    .cityName(cities)
-                    .country(country)
-                    .build();
-            cityDtoList.add(cityDto);
+        for (LocationResponse location : locations) {
+            System.out.println(location.getLocalizedName());
+            cityDtoList.add(CityDto.builder()
+                    .cityName(location.getLocalizedName())
+                    .build());
         }
-
-
         return cityDtoList;
     }
 }
+

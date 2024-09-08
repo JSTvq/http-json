@@ -109,7 +109,6 @@ public class AccuWeatherClient {
 
         List<CityDto> cityDtoList = new ArrayList<>();
         for (LocationResponse location : locations) {
-            System.out.println(location.getLocalizedName());
             cityDtoList.add(CityDto.builder()
                     .cityName(location.getLocalizedName())
                     .build());

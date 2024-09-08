@@ -1,17 +1,17 @@
 package com.kir138.task1;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kir138.task1.client.AccuWeatherClient;
-import com.kir138.task1.cache.CustomCacheManager;
+import com.kir138.task1.model.AccuWeatherClient;
+import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.repository.WeatherCityRepository;
 import com.kir138.task1.service.WeatherService;
+import com.kir138.task1.sqlConnect.PgConnect;
+import okhttp3.Connection;
 import okhttp3.OkHttpClient;
-
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         /**
          * Реализовать корректный вывод информации о текущей погоде. Создать класс WeatherResponse
          * и десериализовать ответ сервера. Выводить пользователю только текстовое описание
@@ -28,17 +28,11 @@ public class App {
                 .build();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        AccuWeatherClient accuWeatherClient = new AccuWeatherClient(objectMapper, okHttpClient);
-        WeatherCityRepository weatherCityRepository = new WeatherCityRepository();
-
+        AccuWeatherClient accuWeatherClient = new AccuWeatherClient(okHttpClient, objectMapper);
         CustomCacheManager customCacheManager = new CustomCacheManager();
-        WeatherService weatherService = new WeatherService(accuWeatherClient,
-                weatherCityRepository,
-                customCacheManager);
+        WeatherCityRepository weatherCityRepository = new WeatherCityRepository();
+        WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager);
 
         weatherService.run();
-        /*for (int i = 0; i < 5; i++) {
-            weatherService.run();
-        }*/
     }
 }

@@ -1,12 +1,12 @@
 package com.kir138.task1.service;
 
-import com.kir138.task1.client.AccuWeatherClient;
+import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.dto.CityDto;
-import com.kir138.task1.cache.CustomCacheManager;
+import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.repository.WeatherCityRepository;
 import com.kir138.task1.model.dto.WeatherResponse;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.time.ZonedDateTime;
@@ -17,50 +17,70 @@ import java.util.Map;
 import java.util.Scanner;
 
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class WeatherService {
     private final AccuWeatherClient accuWeatherClient;
     private final WeatherCityRepository weatherCityRepository;
     private final CustomCacheManager customCacheManager;
 
-    public void run() throws IOException {
-        Map<Long, CityDto> longCityMap = listCitiesCache();
-//        displayCityList(listCities);
-        String citySelectedUser = getUserCityInput();
+    public void run() {
 
-        if (!longCityMap.containsValue(citySelectedUser)) {
-            System.out.println("Введенный город не найден. \nОбновите список городов и попробуйте снова");
-            return;
-        }
+        Map<Long, CityDto> listCities = listCitiesCache();
 
-        String city = citySelectedUser;
+        while (true) {
+            String citySelectedUser = getUserCityInput();
 
+            if (citySelectedUser.equalsIgnoreCase("exit")) {
+                System.out.println("Программа завершена.");
+                break;
+            }
 
-        String locationKey = accuWeatherClient.getLocationKey(city);
-        if (locationKey == null) {
-            System.out.println("Введенный город не найден, обновите список городов");
-            return;
-        }
+            CityDto selectedCity = listCities.values().stream()
+                    .filter(city -> city.getCityName().equalsIgnoreCase(citySelectedUser))
+                    .findFirst()
+                    .orElse(null);
 
-        WeatherResponse weatherResponse = accuWeatherClient.getWeatherForecast(locationKey);
-        if (weatherResponse != null) {
-            List<CityDto> cityDtoList = weatherForecast(weatherResponse, city);
-            for (CityDto cityDto1 : cityDtoList) {
-                weatherCityRepository.save(cityDto1);
+            if (selectedCity == null) {
+                System.out.println("попробуйте ввести город еще раз");
+                continue;
+            }
+
+            try {
+                String locationKey = accuWeatherClient.getLocationKey(citySelectedUser);
+                WeatherResponse weatherResponse = accuWeatherClient.getWeatherForecast(locationKey);
+                if (weatherResponse != null) {
+                    List<CityDto> cityDtoList = weatherForecast(weatherResponse, citySelectedUser);
+                    for (CityDto cityDto : cityDtoList) {
+                        weatherCityRepository.save(cityDto);
+                    }
+                } else {
+                    System.out.println("Не удалось получить прогноз погоды. " +
+                            "Проверьте лимиты запросов или повторите позже.");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    private void displayCityList(List<String> listCities) {
-        for (String city : listCities) {
-            System.out.println(city);
-        }
+    private String getUserCityInput() {
+        return inputCity();
     }
 
-    private String getUserCityInput() {
-        System.out.println("В каком городе из списка смотрим погоду?");
+    public String inputCity() {
         Scanner scanner = new Scanner(System.in);
-        return scanner.next();
+        String input;
+
+        do {
+            System.out.println("В каком городе из списка смотрим погоду? (Введите 'exit' для завершения)");
+            input = scanner.next();
+            if (input.equalsIgnoreCase("exit")) {
+                System.out.println("Программа завершена.");
+                System.exit(0);
+            }
+        } while (input.isEmpty());
+
+        return input;
     }
 
     public List<CityDto> weatherForecast(WeatherResponse weatherResponse, String city) {
@@ -87,10 +107,11 @@ public class WeatherService {
     public Map<Long, CityDto> listCitiesCache() {
         try {
             List<CityDto> cities = accuWeatherClient.getTopCities(150);
+            long id = 1;
             for (CityDto cityDto : cities) {
-                customCacheManager.updateCity(cityDto.getId(), cityDto);
+                customCacheManager.updateCity(id, cityDto);
+                id++;
             }
-
             return customCacheManager.getCache();
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -1,7 +1,6 @@
 package com.kir138.task1.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import lombok.RequiredArgsConstructor;
@@ -11,20 +10,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 public class AccuWeatherClient {
 
     private final static String ACCUWEATHER_HOST = "dataservice.accuweather.com";
-    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV";
+    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV"; //TODO ключ как-то прокинуть по другому
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
 
     public String getLocationKey(String city) throws IOException {
 
-        HttpUrl httpUrl = new HttpUrl.Builder()
+        HttpUrl httpUrl = new HttpUrl.Builder() //TODO Вот такие http запросы вынести отдельно
                 .scheme("http")
                 .host(ACCUWEATHER_HOST)
                 .addPathSegment("locations")
@@ -39,12 +36,16 @@ public class AccuWeatherClient {
                 .url(httpUrl)
                 .build();
 
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            throw new NullPointerException("Не найдена локация");
+        String jsonData = null;
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new NullPointerException("Не найдена локация");
+            }
+
+            if (response.body() != null) {
+                jsonData = response.body().string();
+            }
         }
-        assert response.body() != null;
-        String jsonData = response.body().string();
         LocationResponse[] locations = objectMapper.readValue(jsonData, LocationResponse[].class);
         if (locations == null || locations.length == 0) {
             throw new IOException("Не найдена локация");
@@ -75,16 +76,19 @@ public class AccuWeatherClient {
                 .url(httpUrl)
                 .build();
 
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            System.out.println("Не удалось получить прогноз погоды для ключа локации: " + locationKey);
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Не удалось получить прогноз погоды для ключа локации: " + locationKey); //нужно это или др исключение?!
+            }
+            String jsonData = null;
+            if (response.body() != null) {
+                jsonData = response.body().string();
+            }
+            return objectMapper.readValue(jsonData, WeatherResponse.class);
         }
-        assert response.body() != null;
-        String jsonData = response.body().string();
-        return objectMapper.readValue(jsonData, WeatherResponse.class);
     }
 
-    public List<CityDto> getTopCities(int num) throws IOException {
+    public LocationResponse[] getTopCities(int num) throws IOException {
         HttpUrl httpUrl = new HttpUrl.Builder()
                 .scheme("http")
                 .host(ACCUWEATHER_HOST)
@@ -99,21 +103,17 @@ public class AccuWeatherClient {
                 .url(httpUrl)
                 .build();
 
-        Response response = okHttpClient.newCall(request).execute();
-        if (!response.isSuccessful()) {
-            System.out.println("Не удалось получить список топ городов");
-        }
-        assert response.body() != null;
-        String topCities = response.body().string();
-        LocationResponse[] locations = objectMapper.readValue(topCities, LocationResponse[].class);
+        try (Response response = okHttpClient.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Не удалось получить список топ городов"); //нужно это или др исключение?!
+            }
 
-        List<CityDto> cityDtoList = new ArrayList<>();
-        for (LocationResponse location : locations) {
-            cityDtoList.add(CityDto.builder()
-                    .cityName(location.getLocalizedName())
-                    .build());
+            String topCities = null;
+            if (response.body() != null) {
+                topCities = response.body().string();
+            }
+            return objectMapper.readValue(topCities, LocationResponse[].class);
         }
-        return cityDtoList;
     }
 }
 

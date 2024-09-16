@@ -7,9 +7,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public enum SqlQuery {
-    INSERT_CITY("INSERT INTO weather (city, date, icon, temperature) "
+    INSERT_CITY("INSERT INTO weather (city_name, rq_date_time, weather_conditions, temperature) "
             + "VALUES (?, ?, ?, ?)"),
-    UNIQUE_CITY("SELECT 1 from weather where city = ? and date = ?");
+    UNIQUE_CITY("SELECT 1 from weather where city_name = ? and rq_date_time = ?"),
+    CREATE_TABLE("CREATE TABLE IF NOT EXISTS weather (" +
+            "id SERIAL PRIMARY KEY," +
+            "city_name VARCHAR(255)," +
+            "rq_date_time TIMESTAMP," +
+            "temperature DOUBLE PRECISION," +
+            "weather_conditions VARCHAR(255))"),
+    FIND_CITY_NAME("SELECT * from weather where city_name = ?"),
+    FIND_CITY_ID("SELECT * from weather where id = ?"),
+    FIND_ALL_CITY_NAME("SELECT * from weather where "),
+    FIND_ALL_CITY("SELECT * from weather"),
+    DELETE_CITY("DELETE from weather where id = ?");
 
     private final String query;
 }

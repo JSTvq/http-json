@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.sql.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,16 +29,18 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             preparedStatement.setString(1, nameCity);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
+                Long id  = resultSet.getLong("id");
                 String cityName = resultSet.getString("city_name");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
-                Timestamp date = resultSet.getTimestamp("rq_date_time");
+                Date date = resultSet.getDate("rq_date_time");
 
                 WeatherHistory weatherHistory = WeatherHistory.builder()
+                        .id(id)
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDateTime())
+                        .rqDateTime(date.toLocalDate())
                         .build();
                 weatherHistories.add(weatherHistory);
             }
@@ -59,14 +60,14 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                 String cityName = resultSet.getString("city_name");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
-                Timestamp date = resultSet.getTimestamp("rq_date_time");
+                Date date = resultSet.getDate("rq_date_time");
 
                 WeatherHistory weatherHistory = WeatherHistory.builder()
                         .id(idCity)
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDateTime())
+                        .rqDateTime(date.toLocalDate())
                         .build();
                 return Optional.of(weatherHistory);
             }
@@ -86,14 +87,14 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                 String cityName = resultSet.getString("city_name");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
-                Timestamp date = resultSet.getTimestamp("rq_date_time");
+                Date date = resultSet.getDate("rq_date_time");
 
                 WeatherHistory weatherHistory = WeatherHistory.builder()
                         .id(id)
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDateTime())
+                        .rqDateTime(date.toLocalDate())
                         .build();
                 cities.add(weatherHistory);
             }
@@ -119,9 +120,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
     public WeatherHistory save(WeatherHistory weatherHistory) {
         try(PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.INSERT_CITY.getQuery())) {
             // Получаем LocalDateTime
-            LocalDateTime localDateTime = weatherHistory.getRqDateTime();
-            // Извлекаем LocalDate
-            LocalDate localDate = localDateTime.toLocalDate();
+            LocalDate localDate = weatherHistory.getRqDateTime();
             // Преобразуем LocalDate в java.sql.Date
             Date sqlDate = Date.valueOf(localDate);
                 if (!existsByCityAndDate(weatherHistory.getCityName(), sqlDate)) {

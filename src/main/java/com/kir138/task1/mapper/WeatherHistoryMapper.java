@@ -5,11 +5,8 @@ import com.kir138.task1.model.dto.WeatherResponse;
 import com.kir138.task1.model.entity.WeatherHistory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherHistoryMapper {
@@ -25,7 +22,27 @@ public class WeatherHistoryMapper {
     }
 
     public List<WeatherHistory> weatherForecast(WeatherResponse weatherResponse, String city_name) {
-        List<WeatherHistory> cityDtoList = new ArrayList<>(); //TODO маппер переписать через стрим
+
+        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        return weatherResponse.getList().stream().map(item -> {
+            OffsetDateTime offsetDateTime = OffsetDateTime.parse(item.getDateText(), inputFormatter);
+            LocalDate localDate = offsetDateTime.toLocalDate();
+
+            String weather_conditions = item.getDay().getIconPhrase();
+            double temperature = item.getTemperature().getValue().getTemp();
+            System.out.println("В городе " + city_name + " на дату " + localDate + " ожидается: " + weather_conditions + ", " +
+                    "температура " + temperature + "°C");
+
+            // Добавляем запись в список
+            return WeatherHistory.builder()
+                    .cityName(city_name)
+                    .rqDateTime(localDate)
+                    .temperature(temperature)
+                    .weatherConditions(weather_conditions)
+                    .build();
+        })
+                .toList();
+        /*List<WeatherHistory> cityDtoList = new ArrayList<>(); //TODO маппер переписать через стрим
         DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
@@ -47,6 +64,6 @@ public class WeatherHistoryMapper {
                     .weatherConditions(weather_conditions)
                     .build());
         }
-        return cityDtoList;
+        return cityDtoList;*/
     }
 }

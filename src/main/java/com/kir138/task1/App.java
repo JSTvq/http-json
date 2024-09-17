@@ -12,6 +12,7 @@ import okhttp3.OkHttpClient;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class App {
@@ -36,16 +37,23 @@ public class App {
         CustomCacheManager customCacheManager = new CustomCacheManager();
         WeatherCityRepository weatherCityRepository = new WeatherCityRepository();
         WeatherHistoryMapper weatherHistoryMapper = new WeatherHistoryMapper();
-        WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager, weatherHistoryMapper);
+        Scanner scanner = new Scanner(System.in);
+        WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager, weatherHistoryMapper, scanner);
 
         weatherService.createTable("weather");
-        weatherService.run();
+        /*weatherService.run();
         List<CityDto> main2 = weatherService.findAllCities();
         for (CityDto cityDto : main2) {
             System.out.println(cityDto);
-        }
-        weatherService.findCityByName("Moscow");
-        weatherService.findCityById(5L);
-        weatherService.deleteCityById(5L);
+        }*/
+        //weatherService.findCityByName("Moscow");
+        //weatherService.findCityById(5L);
+        //weatherService.deleteCityById(5L);
+        /*List<CityDto> main2 = weatherService.findAllCities();
+        for (CityDto cityDto : main2) {
+            System.out.println(cityDto);
+        }*/
+        System.out.println(weatherService.findCityById(7L));
+        System.out.println(weatherService.findCityByName("Miami"));
     }
 }

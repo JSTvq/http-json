@@ -105,7 +105,7 @@ public class AccuWeatherClient {
 
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Не удалось получить список топ городов"); //нужно это или др исключение?!
+                throw new IOException("Не удалось получить список топ городов");
             }
 
             String topCities = null;

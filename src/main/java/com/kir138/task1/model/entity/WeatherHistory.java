@@ -2,6 +2,7 @@ package com.kir138.task1.model.entity;
 
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 public class WeatherHistory {
     private Long id;
     private String cityName;
-    private LocalDateTime rqDateTime;
+    private LocalDate rqDateTime;
     private String weatherConditions;
     private Double temperature;
 }

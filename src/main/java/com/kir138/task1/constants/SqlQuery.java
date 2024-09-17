@@ -18,7 +18,6 @@ public enum SqlQuery {
             "weather_conditions VARCHAR(255))"),
     FIND_CITY_NAME("SELECT * from weather where city_name = ?"),
     FIND_CITY_ID("SELECT * from weather where id = ?"),
-    FIND_ALL_CITY_NAME("SELECT * from weather where "),
     FIND_ALL_CITY("SELECT * from weather"),
     DELETE_CITY("DELETE from weather where id = ?");
 

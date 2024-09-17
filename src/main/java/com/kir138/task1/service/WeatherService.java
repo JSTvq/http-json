@@ -23,6 +23,7 @@ public class WeatherService {
     private final WeatherCityRepository weatherCityRepository;
     private final CustomCacheManager customCacheManager;
     private final WeatherHistoryMapper weatherHistoryMapper;
+    private final Scanner scanner;
 
     public void run() {
 

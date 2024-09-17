@@ -26,7 +26,6 @@ public class WeatherService {
     private final Scanner scanner;
 
     public void run() {
-
         Map<Long, LocationResponse> listCities = listCitiesCache();
 
         for (LocationResponse cityName : listCities.values()) {
@@ -63,7 +62,7 @@ public class WeatherService {
     }
 
     public String inputCity() {
-        Scanner scanner = new Scanner(System.in);
+        //Scanner scanner = new Scanner(System.in);
         String input;
 
         do {

@@ -7,10 +7,12 @@ import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.service.WeatherService;
-import com.kir138.task1.sqlConnect.PgConnect;
+import com.kir138.task1.sql.Connect.PgConnect;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -18,7 +20,7 @@ import java.util.Scanner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-//@ExtendWith(MockitoExtension.class)
+@ExtendWith(MockitoExtension.class)
 public class WeatherCityRepositoryTest {
 
     private WeatherCityRepository weatherCityRepository;
@@ -28,6 +30,7 @@ public class WeatherCityRepositoryTest {
     private AccuWeatherClient accuWeatherClient;
     @Mock
     private CustomCacheManager customCacheManager;
+    @Mock
     private Scanner scanner;
 
     @BeforeEach
@@ -56,9 +59,7 @@ public class WeatherCityRepositoryTest {
                     .build();
 
             WeatherHistory result = weatherCityRepository.save(weatherHistory);
-            CityDto cityDto = weatherService.findCityById(result.getId());
-
-            //TODO дописать после сейва. С помощью метода findById удостовериться, что данные были сохранены.
+            CityDto cityDto = weatherService.findCityById(result.getId()); //TODO дописать после сейва. С помощью метода findById удостовериться, что данные были сохранены.
 
             assertThat(cityDto)
                     .isNotNull()
@@ -70,6 +71,10 @@ public class WeatherCityRepositoryTest {
                             result.getWeatherConditions(),
                             result.getTemperature()
                     );
+
+            assertThat(result.getId()).isNotNull();
+            assertThat(result.getCityName()).isEqualTo("Moscow");
+            assertThat(result.getTemperature()).isEqualTo(15.0);
 
 
             /*assertNotNull(cityDto);
@@ -88,7 +93,6 @@ public class WeatherCityRepositoryTest {
                 .temperature(15.0)
                 .build();
 
-
         weatherCityRepository.save(weatherHistory);
 
         WeatherHistory weatherHistoryDuplicate = WeatherHistory.builder()
@@ -99,8 +103,8 @@ public class WeatherCityRepositoryTest {
                 .build();
 
         WeatherHistory resultDuplicate = weatherCityRepository.save(weatherHistoryDuplicate);
-        //assertNotNull(resultDuplicate.getId());
-        assertEquals(weatherHistory.getCityName(), resultDuplicate.getCityName()); //TODO эти assert'ы переписать через assertJ, в функциональном стиле
+        assertNotNull(resultDuplicate.getId());
+        assertEquals(weatherHistory.getCityName(), resultDuplicate.getCityName());
         assertEquals(weatherHistory.getRqDateTime(), resultDuplicate.getRqDateTime());
         assertEquals(weatherHistory.getWeatherConditions(), resultDuplicate.getWeatherConditions());
         assertEquals(weatherHistory.getTemperature(), resultDuplicate.getTemperature());

@@ -24,46 +24,22 @@ public class WeatherHistoryMapper {
     public List<WeatherHistory> weatherForecast(WeatherResponse weatherResponse, String city_name) {
 
         DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        return weatherResponse.getList().stream().map(item -> {
-            OffsetDateTime offsetDateTime = OffsetDateTime.parse(item.getDateText(), inputFormatter);
-            LocalDate localDate = offsetDateTime.toLocalDate();
+        return weatherResponse.getList().stream()
+                .map(item -> {
+                    OffsetDateTime offsetDateTime = OffsetDateTime.parse(item.getDateText(), inputFormatter);
+                    LocalDate localDate = offsetDateTime.toLocalDate();
+                    String weather_conditions = item.getDay().getIconPhrase();
+                    double temperature = item.getTemperature().getValue().getTemp();
+                    System.out.println("В городе " + city_name + " на дату " + localDate + " ожидается: " + weather_conditions + ", " +
+                        "температура " + temperature + "°C");
 
-            String weather_conditions = item.getDay().getIconPhrase();
-            double temperature = item.getTemperature().getValue().getTemp();
-            System.out.println("В городе " + city_name + " на дату " + localDate + " ожидается: " + weather_conditions + ", " +
-                    "температура " + temperature + "°C");
-
-            // Добавляем запись в список
-            return WeatherHistory.builder()
-                    .cityName(city_name)
-                    .rqDateTime(localDate)
-                    .temperature(temperature)
-                    .weatherConditions(weather_conditions)
-                    .build();
-        })
+                    return WeatherHistory.builder()
+                        .cityName(city_name)
+                        .rqDateTime(localDate)
+                        .temperature(temperature)
+                        .weatherConditions(weather_conditions)
+                        .build();
+                })
                 .toList();
-        /*List<WeatherHistory> cityDtoList = new ArrayList<>(); //TODO маппер переписать через стрим
-        DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-
-        for (WeatherResponse.WeatherList item : weatherResponse.getList()) {
-            OffsetDateTime offsetDateTime = OffsetDateTime.parse(item.getDateText(), inputFormatter);
-            LocalDate localDate = offsetDateTime.toLocalDate();
-            LocalDateTime localDateTime = localDate.atStartOfDay();
-
-            String weather_conditions = item.getDay().getIconPhrase();
-            double temperature = item.getTemperature().getValue().getTemp();
-            System.out.println("В городе " + city_name + " на дату " + localDateTime + " ожидается: " + weather_conditions + ", " +
-                    "температура " + temperature + "°C");
-
-            // Добавляем запись в список
-            cityDtoList.add(WeatherHistory.builder()
-                    .cityName(city_name)
-                    .rqDateTime(localDateTime)
-                    .temperature(temperature)
-                    .weatherConditions(weather_conditions)
-                    .build());
-        }
-        return cityDtoList;*/
     }
 }

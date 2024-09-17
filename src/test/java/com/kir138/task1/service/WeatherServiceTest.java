@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Scanner;
 
 import static org.mockito.Mockito.*;
@@ -40,13 +41,12 @@ public class WeatherServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Инициализация происходит автоматически благодаря аннотациям
+
     }
 
     @Test
     void testRunExitImmediately() throws IOException {
         when(scanner.next()).thenReturn("exit");
-
         when(accuWeatherClient.getTopCities(150)).thenReturn(new LocationResponse[0]);
 
         weatherService.run();
@@ -54,5 +54,4 @@ public class WeatherServiceTest {
         verify(accuWeatherClient).getTopCities(150);
         verifyNoMoreInteractions(accuWeatherClient, weatherCityRepository, customCacheManager, scanner);
     }
-
 }

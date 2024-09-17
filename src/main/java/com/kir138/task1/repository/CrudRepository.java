@@ -1,7 +1,5 @@
 package com.kir138.task1.repository;
 
-import com.kir138.task1.model.entity.WeatherHistory;
-
 import java.util.List;
 import java.util.Optional;
 

@@ -13,25 +13,12 @@ import java.io.IOException;
 
 @RequiredArgsConstructor
 public class AccuWeatherClient {
-
-    private final static String ACCUWEATHER_HOST = "dataservice.accuweather.com";
-    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV"; //TODO ключ как-то прокинуть по другому
     private final OkHttpClient okHttpClient;
     private final ObjectMapper objectMapper;
+    private final AccuWeatherUrlBuilder accuWeatherUrlBuilder;
 
     public String getLocationKey(String city) throws IOException {
-
-        HttpUrl httpUrl = new HttpUrl.Builder() //TODO Вот такие http запросы вынести отдельно
-                .scheme("http")
-                .host(ACCUWEATHER_HOST)
-                .addPathSegment("locations")
-                .addPathSegment("v1")
-                .addPathSegment("cities")
-                .addPathSegment("search")
-                .addQueryParameter("apikey", apiKey)
-                .addQueryParameter("q", city)
-                .build();
-
+        HttpUrl httpUrl = accuWeatherUrlBuilder.buildLocationKeyUrl(city);
         Request request = new Request.Builder()
                 .url(httpUrl)
                 .build();
@@ -58,27 +45,14 @@ public class AccuWeatherClient {
     }
 
     public WeatherResponse getWeatherForecast(String locationKey) throws IOException {
-
-        HttpUrl httpUrl = new HttpUrl.Builder()
-                .scheme("http")
-                .host(ACCUWEATHER_HOST)
-                .addPathSegment("forecasts")
-                .addPathSegment("v1")
-                .addPathSegment("daily")
-                .addPathSegment("5day")
-                .addPathSegment(locationKey)
-                .addQueryParameter("apikey", apiKey)
-                .addQueryParameter("language", "ru-ru")
-                .addQueryParameter("metric", "true")
-                .build();
-
+        HttpUrl httpUrl = accuWeatherUrlBuilder.buildWeatherForecastUrl(locationKey);
         Request request = new Request.Builder()
                 .url(httpUrl)
                 .build();
 
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("Не удалось получить прогноз погоды для ключа локации: " + locationKey); //нужно это или др исключение?!
+                throw new IOException("Не удалось получить прогноз погоды для ключа локации: " + locationKey);
             }
             String jsonData = null;
             if (response.body() != null) {
@@ -89,16 +63,7 @@ public class AccuWeatherClient {
     }
 
     public LocationResponse[] getTopCities(int num) throws IOException {
-        HttpUrl httpUrl = new HttpUrl.Builder()
-                .scheme("http")
-                .host(ACCUWEATHER_HOST)
-                .addPathSegment("locations")
-                .addPathSegment("v1")
-                .addPathSegment("topcities")
-                .addPathSegment(String.valueOf(num))
-                .addQueryParameter("apikey", apiKey)
-                .build();
-
+        HttpUrl httpUrl = accuWeatherUrlBuilder.buildTopCities(num);
         Request request = new Request.Builder()
                 .url(httpUrl)
                 .build();

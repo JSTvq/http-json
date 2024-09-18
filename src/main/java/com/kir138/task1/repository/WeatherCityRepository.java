@@ -1,12 +1,10 @@
 package com.kir138.task1.repository;
 
 import com.kir138.task1.constants.SqlQuery;
-import com.kir138.task1.mapper.WeatherHistoryMapper;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.sql.Connect.PgConnect;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -16,20 +14,18 @@ import java.util.Optional;
 
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
-public class WeatherCityRepository implements CrudRepository<WeatherHistory, Long>{
+@RequiredArgsConstructor
+public class WeatherCityRepository implements CrudRepository<WeatherHistory, Long> {
 
     private final Connection connection = PgConnect.getConnection();
-    private final WeatherHistoryMapper weatherHistoryMapper;
 
     public List<WeatherHistory> findByNameCity(String nameCity) {
         List<WeatherHistory> weatherHistories = new ArrayList<>();
-        try(PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.FIND_CITY_NAME.getQuery())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.FIND_CITY_NAME.getQuery())) {
             preparedStatement.setString(1, nameCity);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Long id  = resultSet.getLong("id");
+                Long id = resultSet.getLong("id");
                 String cityName = resultSet.getString("city_name");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
@@ -52,7 +48,8 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
 
     @Override
     public Optional<WeatherHistory> findById(Long id) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.FIND_CITY_ID.getQuery())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                SqlQuery.FIND_CITY_ID.getQuery())) {
             preparedStatement.setLong(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -80,8 +77,8 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
     @Override
     public List<WeatherHistory> findAll() {
         List<WeatherHistory> cities = new ArrayList<>();
-        try(Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(SqlQuery.FIND_ALL_CITY.getQuery())) {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(SqlQuery.FIND_ALL_CITY.getQuery())) {
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String cityName = resultSet.getString("city_name");
@@ -105,10 +102,10 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
     }
 
     public boolean existsByCityAndDate(String city, Date date) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.UNIQUE_CITY.getQuery())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.UNIQUE_CITY.getQuery())) {
             preparedStatement.setString(1, city);
             preparedStatement.setDate(2, date);
-            try(ResultSet resultSet = preparedStatement.executeQuery()) {
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 return resultSet.next();
             }
         } catch (SQLException e) {
@@ -118,19 +115,27 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
 
     @Override
     public WeatherHistory save(WeatherHistory weatherHistory) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.INSERT_CITY.getQuery())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(
+                SqlQuery.INSERT_CITY.getQuery(), Statement.RETURN_GENERATED_KEYS)) {
             // Получаем LocalDateTime
             LocalDate localDate = weatherHistory.getRqDateTime();
             // Преобразуем LocalDate в java.sql.Date
             Date sqlDate = Date.valueOf(localDate);
-                if (!existsByCityAndDate(weatherHistory.getCityName(), sqlDate)) {
-                    preparedStatement.setString(1, weatherHistory.getCityName());
-                    preparedStatement.setDate(2, sqlDate);
-                    preparedStatement.setString(3, weatherHistory.getWeatherConditions());
-                    preparedStatement.setDouble(4, weatherHistory.getTemperature());
-                    preparedStatement.executeUpdate();
+
+            preparedStatement.setString(1, weatherHistory.getCityName());
+            preparedStatement.setDate(2, sqlDate);
+            preparedStatement.setString(3, weatherHistory.getWeatherConditions());
+            preparedStatement.setDouble(4, weatherHistory.getTemperature());
+            preparedStatement.executeUpdate();
+
+            try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    weatherHistory.setId(generatedKeys.getLong(1));
                 }
-                return weatherHistory;
+            }
+
+            connection.commit();
+            return weatherHistory;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -138,7 +143,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
 
     @Override
     public void deleteCityById(Long id) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.DELETE_CITY.getQuery())) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.DELETE_CITY.getQuery())) {
             preparedStatement.setLong(1, id);
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected == 0) {
@@ -154,6 +159,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(createTableSql);   //нужно ли тут обрабатывать execute через if???
+            connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы: " + e.getMessage());
         }

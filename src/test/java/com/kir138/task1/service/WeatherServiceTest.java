@@ -5,15 +5,17 @@ import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.repository.WeatherCityRepository;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.InputStream;
 import java.util.Scanner;
 
 import static org.mockito.Mockito.*;
@@ -27,31 +29,34 @@ public class WeatherServiceTest {
     @Mock
     private WeatherCityRepository weatherCityRepository;
 
-    @Mock
+    @Spy
     private CustomCacheManager customCacheManager;
 
     @Mock
     private Scanner scanner;
 
-    @InjectMocks
+    @Spy
     private WeatherHistoryMapper weatherHistoryMapper;
 
     @InjectMocks
     private WeatherService weatherService;
 
-    @BeforeEach
-    void setUp() {
-
+    @AfterEach
+    void afterEach() {
+        verifyNoMoreInteractions(accuWeatherClient, weatherCityRepository, scanner,
+                weatherHistoryMapper, customCacheManager);
     }
 
     @Test
     void testRunExitImmediately() throws IOException {
         when(scanner.next()).thenReturn("exit");
-        when(accuWeatherClient.getTopCities(150)).thenReturn(new LocationResponse[0]);
+        when(accuWeatherClient.getTopCities(150))
+                .thenReturn(new LocationResponse[0]);
 
         weatherService.run();
 
         verify(accuWeatherClient).getTopCities(150);
-        verifyNoMoreInteractions(accuWeatherClient, weatherCityRepository, customCacheManager, scanner);
+        verify(customCacheManager).getCache();
+        verify(scanner).next();
     }
 }

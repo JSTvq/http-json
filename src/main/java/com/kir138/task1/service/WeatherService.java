@@ -5,19 +5,20 @@ import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.dto.LocationResponse;
+import com.kir138.task1.model.dto.WeatherResponse;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.repository.WeatherCityRepository;
-import com.kir138.task1.model.dto.WeatherResponse;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor(force = true)
+@RequiredArgsConstructor
 public class WeatherService {
     private final AccuWeatherClient accuWeatherClient;
     private final WeatherCityRepository weatherCityRepository;
@@ -51,10 +52,10 @@ public class WeatherService {
             try {
                 String locationKey = accuWeatherClient.getLocationKey(citySelectedUser);
                 WeatherResponse weatherResponse = accuWeatherClient.getWeatherForecast(locationKey);
-                    List<WeatherHistory> cityDtoList = weatherHistoryMapper.weatherForecast(weatherResponse, citySelectedUser);
-                    for (WeatherHistory weatherHistory : cityDtoList) {
-                        weatherCityRepository.save(weatherHistory);
-                    }
+                List<WeatherHistory> cityDtoList = weatherHistoryMapper.weatherForecast(weatherResponse, citySelectedUser);
+                for (WeatherHistory weatherHistory : cityDtoList) {
+                    weatherCityRepository.save(weatherHistory);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,37 +1,22 @@
 package com.kir138.task1.repository;
 
 import com.kir138.task1.constants.SqlQuery;
-import com.kir138.task1.mapper.WeatherHistoryMapper;
-import com.kir138.task1.model.AccuWeatherClient;
-import com.kir138.task1.model.CustomCacheManager;
-import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.entity.WeatherHistory;
-import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Test;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
-import java.util.Scanner;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ExtendWith(MockitoExtension.class)
 public class WeatherCityRepositoryTest {
 
-    private WeatherCityRepository weatherCityRepository;
-    private WeatherService weatherService;
-    private WeatherHistoryMapper weatherHistoryMapper;
-    @Mock
-    private AccuWeatherClient accuWeatherClient;
-    @Mock
-    private CustomCacheManager customCacheManager;
-    @Mock
-    private Scanner scanner;
+    private final WeatherCityRepository weatherCityRepository = new WeatherCityRepository();
 
     @BeforeEach
     void setUp() throws SQLException {
@@ -41,47 +26,40 @@ public class WeatherCityRepositoryTest {
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(createTableSql);
+            connection.commit();
         }
 
-        weatherHistoryMapper = new WeatherHistoryMapper();
-        weatherCityRepository = new WeatherCityRepository();
-        weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager, weatherHistoryMapper, scanner);
     }
 
-        @Test
-        public void saveNewCity() {
-            LocalDate localDate = LocalDate.of(2024, 9, 14);
-            WeatherHistory weatherHistory = WeatherHistory.builder()
-                    .cityName("Moscow")
-                    .rqDateTime(localDate)
-                    .weatherConditions("Небольшая облачность")
-                    .temperature(15.0)
-                    .build();
+    @Test
+    public void saveNewCityShouldWork() {
+        LocalDate localDate = LocalDate.of(2024, 9, 15);
+        WeatherHistory weatherHistory = WeatherHistory.builder()
+                .cityName("Moscow")
+                .rqDateTime(localDate)
+                .weatherConditions("Небольшая облачность")
+                .temperature(15.0)
+                .build();
 
-            WeatherHistory result = weatherCityRepository.save(weatherHistory);
-            CityDto cityDto = weatherService.findCityById(result.getId()); //TODO дописать после сейва. С помощью метода findById удостовериться, что данные были сохранены.
+        WeatherHistory result = weatherCityRepository.save(weatherHistory);
+        Optional<WeatherHistory> findByIdWeatherHistory = weatherCityRepository.findById(result.getId()); //TODO дописать после сейва. С помощью метода findById удостовериться, что данные были сохранены.
 
-            assertThat(cityDto)
-                    .isNotNull()
-                    .extracting(CityDto::getCityName, CityDto::getDate, CityDto::getWeatherConditions,
-                            CityDto::getTemperature)
-                    .containsExactly(
-                            result.getCityName(),
-                            result.getRqDateTime(),
-                            result.getWeatherConditions(),
-                            result.getTemperature()
-                    );
+        assertThat(findByIdWeatherHistory)
+                .get()
+                .isNotNull()
+                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqDateTime, WeatherHistory::getWeatherConditions,
+                        WeatherHistory::getTemperature)
+                .containsExactly(
+                        result.getCityName(),
+                        result.getRqDateTime(),
+                        result.getWeatherConditions(),
+                        result.getTemperature()
+                );
 
-            assertThat(result.getId()).isNotNull();
-            assertThat(result.getCityName()).isEqualTo("Moscow");
-            assertThat(result.getTemperature()).isEqualTo(15.0);
-
-
-            /*assertNotNull(cityDto);
-            assertEquals(cityDto, result);
-            assertNotNull(result); //TODO эти два assert'a переписать через assertJ, в функциональном стиле
-            assertEquals(weatherHistory, result);*/
-        }
+        assertThat(result.getId()).isNotNull();
+        assertThat(result.getCityName()).isEqualTo("Moscow");
+        assertThat(result.getTemperature()).isEqualTo(15.0);
+    }
 
     /*@Test
     public void saveExistingCity() throws SQLException {
@@ -157,4 +135,4 @@ public class WeatherCityRepositoryTest {
             boolean result = weatherCityRepository.existsByCityAndDate("Moscow", "15.11.2022");
             assertFalse(result);
         }*/
-    }
+}

@@ -3,6 +3,7 @@ package com.kir138.task1.repository;
 import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.sql.Connect.PgConnect;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -14,10 +15,13 @@ import java.util.Optional;
 
 
 @Getter
-@RequiredArgsConstructor
 public class WeatherCityRepository implements CrudRepository<WeatherHistory, Long> {
 
-    private final Connection connection = PgConnect.getConnection();
+    private final Connection connection; //прокинуть через конструктор
+
+    public WeatherCityRepository(Connection connect) {
+        this.connection = connect;
+    }
 
     public List<WeatherHistory> findByNameCity(String nameCity) {
         List<WeatherHistory> weatherHistories = new ArrayList<>();
@@ -101,25 +105,11 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
         return cities;
     }
 
-    public boolean existsByCityAndDate(String city, Date date) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.UNIQUE_CITY.getQuery())) {
-            preparedStatement.setString(1, city);
-            preparedStatement.setDate(2, date);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                return resultSet.next();
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public WeatherHistory save(WeatherHistory weatherHistory) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 SqlQuery.INSERT_CITY.getQuery(), Statement.RETURN_GENERATED_KEYS)) {
-            // Получаем LocalDateTime
             LocalDate localDate = weatherHistory.getRqDateTime();
-            // Преобразуем LocalDate в java.sql.Date
             Date sqlDate = Date.valueOf(localDate);
 
             preparedStatement.setString(1, weatherHistory.getCityName());
@@ -133,10 +123,14 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                     weatherHistory.setId(generatedKeys.getLong(1));
                 }
             }
-
             connection.commit();
             return weatherHistory;
         } catch (SQLException e) {
+            try {
+                connection.rollback(); // Откат транзакции при ошибке
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
             throw new RuntimeException(e);
         }
     }

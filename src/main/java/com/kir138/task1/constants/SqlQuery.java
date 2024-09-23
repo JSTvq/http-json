@@ -12,10 +12,10 @@ public enum SqlQuery {
     UNIQUE_CITY("SELECT 1 from weather where city_name = ? and rq_date_time = ?"),
     CREATE_TABLE("CREATE TABLE IF NOT EXISTS weather (" +
             "id SERIAL PRIMARY KEY," +
-            "city_name VARCHAR(255)," +
-            "rq_date_time TIMESTAMP," +
-            "temperature DOUBLE PRECISION," +
-            "weather_conditions VARCHAR(255))"),
+            "city_name VARCHAR(255) NOT NULL," +
+            "rq_date_time TIMESTAMP NOT NULL," +
+            "temperature DOUBLE PRECISION NOT NULL," +
+            "weather_conditions VARCHAR(255) NOT NULL)"),
     FIND_CITY_NAME("SELECT * from weather where city_name = ?"),
     FIND_CITY_ID("SELECT * from weather where id = ?"),
     FIND_ALL_CITY("SELECT * from weather"),

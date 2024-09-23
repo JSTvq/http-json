@@ -6,20 +6,28 @@ import java.sql.SQLException;
 
 public class PgConnect {
 
-    private final static String url = "jdbc:postgresql://localhost:5432/postgres";
-    private final static String username = "admin";
-    private final static String password = "admin";
+    private static final String url = "jdbc:postgresql://localhost:5432/postgres";
+    private static final String username = "postgres";
+    private static final String password = "12341234";
 
-    private static Connection CONNECTION;
+    //private static Connection CONNECTION;
 
     public static Connection getConnection() {
+       try {
+           Connection connection = DriverManager.getConnection(url, username, password);
+           connection.setAutoCommit(false);
+           return connection;
+       } catch (SQLException e) {
+           throw new RuntimeException(e);
+       }
+    }
+
+    public static Connection getConenctionTest() {
         try {
-            if (CONNECTION == null) {
-                CONNECTION = DriverManager.getConnection(url, username, password);
-                CONNECTION.setAutoCommit(false);
-                return CONNECTION;
-            }
-            return CONNECTION;
+            String testUrl = "jdbc:postgresql://localhost:5432/postgres";
+            Connection connection = DriverManager.getConnection(testUrl, username, password);
+            connection.setAutoCommit(false);
+            return connection;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

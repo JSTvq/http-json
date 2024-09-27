@@ -3,9 +3,11 @@ package com.kir138.task1.repository;
 import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.sql.Connect.PgConnect;
+import jdk.jfr.Enabled;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WeatherCityRepositoryTest {
@@ -27,7 +30,6 @@ public class WeatherCityRepositoryTest {
     @BeforeEach
     void setUp() throws SQLException {
         connection = PgConnect.getConenctionTest();
-        //connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "12341234");
         connection.setAutoCommit(false);
         weatherCityRepository = new WeatherCityRepository(connection);
         String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), "weather");
@@ -95,7 +97,7 @@ public class WeatherCityRepositoryTest {
         assertThrows(RuntimeException.class, () -> weatherCityRepository.save(weatherHistory));
     }
 
-    /*@Test
+    @Test
     public void findById() {
         LocalDate localDate = LocalDate.of(2025, 11, 15);
         WeatherHistory weatherHistory = WeatherHistory.builder()
@@ -105,12 +107,24 @@ public class WeatherCityRepositoryTest {
                 .temperature(8.0)
                 .build();
 
+        WeatherHistory result = weatherCityRepository.save(weatherHistory);
         Long id = weatherHistory.getId();
 
         Optional<WeatherHistory> search = weatherCityRepository.findById(id);
 
-        assertThat(search).isEqualTo(weatherHistory);
-    }*/
+        assertThat(search)
+                .isPresent()
+                .get()
+                .isNotNull()
+                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqDateTime, WeatherHistory::getWeatherConditions,
+                        WeatherHistory::getTemperature)
+                .containsExactly(
+                        result.getCityName(),
+                        result.getRqDateTime(),
+                        result.getWeatherConditions(),
+                        result.getTemperature()
+                );
+    }
 
     @Test
     public void findAll() {
@@ -135,7 +149,7 @@ public class WeatherCityRepositoryTest {
         assertThat(resultSearchList).hasSize(2).containsExactlyInAnyOrder(weatherHistorySaveRes1, weatherHistorySaveRes2);
     }
 
-    /*@Test
+    @Disabled
     public void findAllShouldWorkException() {
         WeatherHistory weatherHistory1 = WeatherHistory.builder()
                 .cityName("Novosibirsk")
@@ -154,8 +168,17 @@ public class WeatherCityRepositoryTest {
         weatherCityRepository.save(weatherHistory1);
         weatherCityRepository.save(weatherHistory2);
 
-        assertThrows(SQLException.class, () -> weatherCityRepository.findAll());
-    }*/
+        List<WeatherHistory> allCities = weatherCityRepository.findAll();
+        assertEquals(2, allCities.size());
+
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute("DROP TABLE weather_history");
+            connection.commit();
+        } catch (SQLException ignored) {
+        }
+
+        assertThrows(RuntimeException.class, () -> weatherCityRepository.findAll());
+    }
 
     @Test
     public void deleteCityById() {
@@ -177,5 +200,22 @@ public class WeatherCityRepositoryTest {
 
         Optional<WeatherHistory> afterDelete = weatherCityRepository.findById(id);
         assertThat(afterDelete).isNotPresent();
+    }
+
+    @Test
+    public void findByName() {
+        WeatherHistory weatherHistory = WeatherHistory.builder()
+                .cityName("Novosibirsk")
+                .rqDateTime(LocalDate.of(2022, 4, 20))
+                .weatherConditions("Небольшая облачность")
+                .temperature(8.0)
+                .build();
+
+        String resName = weatherHistory.getCityName();
+
+        weatherCityRepository.save(weatherHistory);
+        List<WeatherHistory> weatherHistoryList = weatherCityRepository.findByNameCity(resName);
+
+        assertThat(weatherHistoryList).containsExactlyInAnyOrder(weatherHistory);
     }
 }

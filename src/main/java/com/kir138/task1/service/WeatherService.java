@@ -63,7 +63,6 @@ public class WeatherService {
     }
 
     public String inputCity() {
-        //Scanner scanner = new Scanner(System.in);
         String input;
 
         do {

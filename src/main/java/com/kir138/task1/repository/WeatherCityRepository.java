@@ -2,10 +2,7 @@ package com.kir138.task1.repository;
 
 import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.entity.WeatherHistory;
-import com.kir138.task1.sql.Connect.PgConnect;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 import java.sql.*;
 import java.time.LocalDate;

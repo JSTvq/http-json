@@ -7,7 +7,7 @@ public class AccuWeatherUrlBuilder {
     private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV"; //TODO ключ как-то прокинуть по другому
 
     public HttpUrl buildLocationKeyUrl(String city) {
-        return new HttpUrl.Builder() //TODO Вот такие http запросы вынести отдельно
+        return new HttpUrl.Builder()
                 .scheme("http")
                 .host(ACCUWEATHER_HOST)
                 .addPathSegment("locations")

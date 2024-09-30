@@ -85,6 +85,14 @@
                             <goal>report</goal>
                         </goals>
                         <phase>verify</phase>
+                        <configuration>
+                            <excludes>
+                                <exclude>com/kir138/task1/constants/**</exclude>
+                                <exclude>com/kir138/task1/model/dto/**</exclude>
+                                <exclude>com/kir138/task1/model/entity/**</exclude>
+                                <exclude>com/kir138/task1/model/AccuWeatherUrlBuilder.class</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

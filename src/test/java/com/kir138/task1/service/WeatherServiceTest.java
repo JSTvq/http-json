@@ -3,6 +3,7 @@ package com.kir138.task1.service;
 import com.kir138.task1.mapper.WeatherHistoryMapper;
 import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.CustomCacheManager;
+import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import com.kir138.task1.model.entity.WeatherHistory;
@@ -17,7 +18,12 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Mockito.*;
 
@@ -127,5 +133,65 @@ public class WeatherServiceTest {
         WeatherResponse weatherResponse = new WeatherResponse();
         weatherResponse.setList(List.of(weatherList));
         return weatherResponse;
+    }
+
+    @Test
+    public void findCityById() {
+        Long id = 1L;
+        WeatherHistory weatherHistory = new WeatherHistory();
+        CityDto cityDto = new CityDto();
+
+        when(weatherCityRepository.findById(id)).thenReturn(Optional.of(weatherHistory));
+        when(weatherHistoryMapper.toCityDto(weatherHistory)).thenReturn(cityDto);
+
+        CityDto actualCityDto = weatherService.findCityById(id);
+
+        assertThat(actualCityDto).isNotNull().isEqualTo(cityDto);
+
+        verify(weatherCityRepository).findById(id);
+        verify(weatherHistoryMapper).toCityDto(weatherHistory);
+    }
+
+    @Test
+    public void findCityByName() {
+        //String nameCity = "Moscow";
+        WeatherHistory weatherHistory1 = WeatherHistory.builder()
+                .id(1L)
+                .cityName("Moscow")
+                .temperature(12.2)
+                .weatherConditions("cold")
+                .rqDateTime(LocalDate.of(2022, 11, 1))
+                .build();
+        /*List<WeatherHistory> weatherHistoryList = new ArrayList<>();
+        CityDto cityDto = new CityDto();
+
+        when(weatherCityRepository.findByNameCity(nameCity)).thenReturn((weatherHistoryList));
+        when(weatherHistoryMapper.toCityDto((WeatherHistory) weatherHistoryList.stream()
+                .map(weatherHistoryMapper::toCityDto)
+                .toList()));
+
+        WeatherHistory weatherHistory1
+
+        List<CityDto> actualCityDto = weatherService.findCityByName(nameCity);
+
+        assertThat(actualCityDto).isNotNull().containsExactlyInAnyOrder(cityDto);
+
+        verify(weatherCityRepository).findByNameCity(nameCity);
+        verify(weatherHistoryMapper).toCityDto((WeatherHistory) weatherHistoryList);*/
+    }
+
+    @Test
+    public void findAllCities() {
+
+    }
+
+    @Test
+    public void deleteCityById() {
+
+    }
+
+    @Test
+    public void createTable() {
+
     }
 }

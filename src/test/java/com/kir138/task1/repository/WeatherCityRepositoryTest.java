@@ -218,4 +218,9 @@ public class WeatherCityRepositoryTest {
 
         assertThat(weatherHistoryList).containsExactlyInAnyOrder(weatherHistory);
     }
+
+    @Test
+    public void createTable() {
+
+    }
 }

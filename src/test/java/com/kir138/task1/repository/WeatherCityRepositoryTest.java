@@ -10,15 +10,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -42,7 +40,7 @@ public class WeatherCityRepositoryTest {
 
     @AfterEach
     void tearDown() throws SQLException {
-        String dropTableSql = "DROP TABLE IF EXISTS weather";
+        String dropTableSql = "DROP TABLE IF EXISTS weather, weather_test";
 
         try (Statement statement = connection.createStatement()) {
             statement.execute(dropTableSql);
@@ -169,15 +167,18 @@ public class WeatherCityRepositoryTest {
         weatherCityRepository.save(weatherHistory2);
 
         List<WeatherHistory> allCities = weatherCityRepository.findAll();
-        assertEquals(2, allCities.size());
+        assertThat(allCities).hasSize(2);
+        //assertEquals(2, allCities.size());
 
         try (Statement stmt = connection.createStatement()) {
-            stmt.execute("DROP TABLE weather_history");
+            stmt.execute("DROP TABLE weather");
             connection.commit();
         } catch (SQLException ignored) {
         }
 
-        assertThrows(RuntimeException.class, () -> weatherCityRepository.findAll());
+        assertThatThrownBy(() -> weatherCityRepository.findAll())
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("найти список не удалось");
     }
 
     @Test
@@ -211,16 +212,26 @@ public class WeatherCityRepositoryTest {
                 .temperature(8.0)
                 .build();
 
-        String resName = weatherHistory.getCityName();
+        String cityName = weatherHistory.getCityName();
 
         weatherCityRepository.save(weatherHistory);
-        List<WeatherHistory> weatherHistoryList = weatherCityRepository.findByNameCity(resName);
+        List<WeatherHistory> weatherHistoryList = weatherCityRepository.findByNameCity(cityName);
 
         assertThat(weatherHistoryList).containsExactlyInAnyOrder(weatherHistory);
     }
 
     @Test
-    public void createTable() {
+    public void createTable() throws SQLException {
+        String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), "weather_test");
 
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(createTableSql);
+            connection.commit();
+        }
+
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet tables = metaData.getTables(null, null, null, null)) {
+            assertThat(tables.next()).isTrue();
+        }
     }
 }

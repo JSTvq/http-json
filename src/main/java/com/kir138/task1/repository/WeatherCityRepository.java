@@ -14,7 +14,7 @@ import java.util.Optional;
 @Getter
 public class WeatherCityRepository implements CrudRepository<WeatherHistory, Long> {
 
-    private final Connection connection; //прокинуть через конструктор
+    private final Connection connection;
 
     public WeatherCityRepository(Connection connect) {
         this.connection = connect;
@@ -97,7 +97,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                 cities.add(weatherHistory);
             }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("найти список не удалось");
         }
         return cities;
     }
@@ -149,7 +149,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
         String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), table);
 
         try (Statement statement = connection.createStatement()) {
-            statement.execute(createTableSql);   //нужно ли тут обрабатывать execute через if???
+            statement.execute(createTableSql);
             connection.commit();
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка при создании таблицы: " + e.getMessage());

@@ -154,44 +154,62 @@ public class WeatherServiceTest {
 
     @Test
     public void findCityByName() {
-        //String nameCity = "Moscow";
-        WeatherHistory weatherHistory1 = WeatherHistory.builder()
-                .id(1L)
-                .cityName("Moscow")
-                .temperature(12.2)
-                .weatherConditions("cold")
-                .rqDateTime(LocalDate.of(2022, 11, 1))
-                .build();
-        /*List<WeatherHistory> weatherHistoryList = new ArrayList<>();
+        String cityName = "Moscow";
+        WeatherHistory weatherHistory = new WeatherHistory();
         CityDto cityDto = new CityDto();
 
-        when(weatherCityRepository.findByNameCity(nameCity)).thenReturn((weatherHistoryList));
-        when(weatherHistoryMapper.toCityDto((WeatherHistory) weatherHistoryList.stream()
-                .map(weatherHistoryMapper::toCityDto)
-                .toList()));
+        when(weatherCityRepository.findByNameCity(cityName)).thenReturn(List.of(weatherHistory));
+        when(weatherHistoryMapper.toCityDto(weatherHistory)).thenReturn(cityDto);
 
-        WeatherHistory weatherHistory1
-
-        List<CityDto> actualCityDto = weatherService.findCityByName(nameCity);
+        List<CityDto> actualCityDto = weatherService.findCityByName(cityName);
 
         assertThat(actualCityDto).isNotNull().containsExactlyInAnyOrder(cityDto);
 
-        verify(weatherCityRepository).findByNameCity(nameCity);
-        verify(weatherHistoryMapper).toCityDto((WeatherHistory) weatherHistoryList);*/
+        verify(weatherCityRepository).findByNameCity(cityName);
+        verify(weatherHistoryMapper).toCityDto(weatherHistory);
     }
 
     @Test
     public void findAllCities() {
+        WeatherHistory weatherHistory = new WeatherHistory();
+        CityDto cityDto = new CityDto();
 
+        when(weatherCityRepository.findAll()).thenReturn(List.of(weatherHistory));
+        when(weatherHistoryMapper.toCityDto(weatherHistory)).thenReturn(cityDto);
+
+        List<CityDto> actualCityDto = weatherService.findAllCities();
+
+        assertThat(actualCityDto).isNotNull().containsExactlyInAnyOrder(cityDto);
+
+        verify(weatherCityRepository).findAll();
+        verify(weatherHistoryMapper).toCityDto(weatherHistory);
     }
 
     @Test
-    public void deleteCityById() {
+    public void deleteCityByIdSuccess() {
+        Long id = 2L;
+        doNothing().when(weatherCityRepository).deleteCityById(id);
+        weatherService.deleteCityById(id);
+        verify(weatherCityRepository).deleteCityById(id);
+    }
 
+    @Test
+    public void deleteCityByIdFail() {
+        Long id = 500L;
+        doThrow(new RuntimeException("No city found with id: " + id)).when(weatherCityRepository).deleteCityById(id);
+
+        assertThrows(RuntimeException.class, () -> {
+            weatherService.deleteCityById(id);
+        });
+
+        verify(weatherCityRepository).deleteCityById(id);
     }
 
     @Test
     public void createTable() {
-
+        String tableName = "weather_test";
+        doNothing().when(weatherCityRepository).createTable(tableName);
+        weatherService.createTable(tableName);
+        verify(weatherCityRepository).createTable(tableName);
     }
 }

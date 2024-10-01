@@ -10,7 +10,7 @@ public enum SqlQuery {
     INSERT_CITY("INSERT INTO weather (city_name, rq_date_time, weather_conditions, temperature) "
             + "VALUES (?, ?, ?, ?)"),
     UNIQUE_CITY("SELECT 1 from weather where city_name = ? and rq_date_time = ?"),
-    CREATE_TABLE("CREATE TABLE IF NOT EXISTS weather (" +
+    CREATE_TABLE("CREATE TABLE IF NOT EXISTS %s (" +
             "id SERIAL PRIMARY KEY," +
             "city_name VARCHAR(255) NOT NULL," +
             "rq_date_time TIMESTAMP NOT NULL," +

@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-
 @Getter
 public class WeatherCityRepository implements CrudRepository<WeatherHistory, Long> {
 
@@ -124,7 +123,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             return weatherHistory;
         } catch (SQLException e) {
             try {
-                connection.rollback(); // Откат транзакции при ошибке
+                connection.rollback();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
@@ -140,8 +139,14 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             if (rowsAffected == 0) {
                 throw new RuntimeException("No city found with id: " + id);
             }
+            connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException(e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
         }
     }
 
@@ -152,7 +157,12 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             statement.execute(createTableSql);
             connection.commit();
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка при создании таблицы: " + e.getMessage());
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException("Ошибка при создании таблицы");
         }
     }
 }

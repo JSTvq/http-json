@@ -3,8 +3,6 @@ package com.kir138.task1.repository;
 import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.sql.Connect.PgConnect;
-import jdk.jfr.Enabled;
-import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -17,7 +15,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class WeatherCityRepositoryTest {
@@ -222,16 +219,21 @@ public class WeatherCityRepositoryTest {
 
     @Test
     public void createTable() throws SQLException {
-        String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), "weather_test");
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(createTableSql);
-            connection.commit();
-        }
-
+        weatherCityRepository.createTable("weather_test");
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet tables = metaData.getTables(null, null, null, null)) {
+        try (ResultSet tables = metaData.getTables(null, null,
+                "weather_test", null)) {
             assertThat(tables.next()).isTrue();
         }
+    }
+
+    @Disabled
+    public void createTableShouldWorkException() throws SQLException {
+        weatherCityRepository.createTable("weather_test");
+
+        assertThatThrownBy(() -> weatherCityRepository.createTable("test"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Ошибка при создании таблицы: ");
+
     }
 }

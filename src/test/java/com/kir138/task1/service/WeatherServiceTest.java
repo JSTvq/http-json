@@ -18,11 +18,9 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static org.mockito.Mockito.*;
@@ -186,7 +184,7 @@ public class WeatherServiceTest {
     }
 
     @Test
-    public void deleteCityByIdSuccess() {
+    public void deleteCityByIdShouldWork() {
         Long id = 2L;
         doNothing().when(weatherCityRepository).deleteCityById(id);
         weatherService.deleteCityById(id);
@@ -194,7 +192,7 @@ public class WeatherServiceTest {
     }
 
     @Test
-    public void deleteCityByIdFail() {
+    public void deleteCityByIdShouldWorkException() {
         Long id = 500L;
         doThrow(new RuntimeException("No city found with id: " + id)).when(weatherCityRepository).deleteCityById(id);
 

@@ -19,6 +19,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
         this.connection = connect;
     }
 
+    @Override
     public List<WeatherHistory> findByNameCity(String nameCity) {
         List<WeatherHistory> weatherHistories = new ArrayList<>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SqlQuery.FIND_CITY_NAME.getQuery())) {

@@ -6,6 +6,8 @@ import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.AccuWeatherUrlBuilder;
 import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
+import com.kir138.task1.model.entity.WeatherHistory;
+import com.kir138.task1.repository.CrudRepository;
 import com.kir138.task1.repository.WeatherCityRepository;
 import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
@@ -38,7 +40,9 @@ public class App {
         AccuWeatherClient accuWeatherClient = new AccuWeatherClient(okHttpClient, objectMapper, accuWeatherUrlBuilder);
         CustomCacheManager customCacheManager = new CustomCacheManager();
         Connection connect = PgConnect.getConnection();
-        WeatherCityRepository weatherCityRepository = new WeatherCityRepository(connect);
+
+        CrudRepository<WeatherHistory, Long> weatherCityRepository = new WeatherCityRepository(connect);
+
         WeatherHistoryMapper weatherHistoryMapper = new WeatherHistoryMapper();
         Scanner scanner = new Scanner(System.in);
         WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager,

@@ -7,6 +7,7 @@ import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import com.kir138.task1.model.entity.WeatherHistory;
+import com.kir138.task1.repository.CrudRepository;
 import com.kir138.task1.repository.WeatherCityRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.Scanner;
 @RequiredArgsConstructor
 public class WeatherService {
     private final AccuWeatherClient accuWeatherClient;
-    private final WeatherCityRepository weatherCityRepository;
+    private final CrudRepository<WeatherHistory, Long> weatherCityRepository;
     private final CustomCacheManager customCacheManager;
     private final WeatherHistoryMapper weatherHistoryMapper;
     private final Scanner scanner;
@@ -112,6 +113,6 @@ public class WeatherService {
     }
 
     public void createTable(String table) {
-        weatherCityRepository.createTable(table);
+//        weatherCityRepository.createTable(table);
     }
 }

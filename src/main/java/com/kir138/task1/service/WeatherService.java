@@ -113,6 +113,6 @@ public class WeatherService {
     }
 
     public void createTable(String table) {
-//        weatherCityRepository.createTable(table);
+        weatherCityRepository.createTable(table);
     }
 }

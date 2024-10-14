@@ -8,6 +8,7 @@ import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.repository.CrudRepository;
+import com.kir138.task1.repository.WeatherCityHibernateRepository;
 import com.kir138.task1.repository.WeatherCityRepository;
 import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
@@ -48,14 +49,16 @@ public class App {
         WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager,
                 weatherHistoryMapper, scanner);
 
-        weatherService.createTable("weather");
-        weatherService.run();
-        weatherService.deleteCityById(5L);
-        List<CityDto> main2 = weatherService.findAllCities();
-        for (CityDto cityDto : main2) {
-            System.out.println(cityDto);
+        System.out.println("введите 1 если хотите запустить код через Hibernate, или 2 чтобы запустить код через JDBC");
+        int choice = scanner.nextInt();
+        if (choice == 1) {
+            weatherCityRepository = new WeatherCityHibernateRepository();
+        } else if (choice == 2) {
+            weatherCityRepository = new WeatherCityRepository(connect);
+            weatherService.createTable("weather");
+        } else {
+            throw new RuntimeException("нужная БД не найдена");
         }
-        System.out.println(weatherService.findCityById(7L));
-        System.out.println(weatherService.findCityByName("Miami"));
+        weatherService.run();
     }
 }

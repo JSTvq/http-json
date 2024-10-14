@@ -1,5 +1,6 @@
 package com.kir138.task1.model.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -11,11 +12,22 @@ import java.util.Objects;
 @Setter
 @Builder
 @ToString
+@Table(name = "weather")
+@Entity
 public class WeatherHistory {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "city_name")
     private String cityName;
+
+    @Column(name = "weather_conditions")
     private LocalDate rqDateTime;
+
+    @Column(name = "rq_date_time")
     private String weatherConditions;
+
+    @Column(name = "temperature")
     private Double temperature;
 
     @Override

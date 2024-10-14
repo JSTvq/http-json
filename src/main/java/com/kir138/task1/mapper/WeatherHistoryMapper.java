@@ -21,7 +21,7 @@ public class WeatherHistoryMapper {
                 .build();
     }
 
-    public List<WeatherHistory> weatherForecast(WeatherResponse weatherResponse, String city_name) {
+    public List<WeatherHistory> weatherForecast(WeatherResponse weatherResponse, String cityName) {
 
         DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
         return weatherResponse.getList().stream()
@@ -30,11 +30,11 @@ public class WeatherHistoryMapper {
                     LocalDate localDate = offsetDateTime.toLocalDate();
                     String weather_conditions = item.getDay().getIconPhrase();
                     double temperature = item.getTemperature().getValue().getTemp();
-                    System.out.println("В городе " + city_name + " на дату " + localDate + " ожидается: " + weather_conditions + ", " +
+                    System.out.println("В городе " + cityName + " на дату " + localDate + " ожидается: " + weather_conditions + ", " +
                         "температура " + temperature + "°C");
 
                     return WeatherHistory.builder()
-                        .cityName(city_name)
+                        .cityName(cityName)
                         .rqDateTime(localDate)
                         .temperature(temperature)
                         .weatherConditions(weather_conditions)

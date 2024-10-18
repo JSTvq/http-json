@@ -235,7 +235,7 @@ public class WeatherCityRepositoryTest {
 
     @Test
     public void createTable() throws SQLException {
-        weatherCityRepository.createTable("weather_test");
+        createTable("weather_test");
         DatabaseMetaData metaData = connection.getMetaData();
         try (ResultSet tables = metaData.getTables(null, null,
                 "weather_test", null)) {

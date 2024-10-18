@@ -16,17 +16,14 @@ import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
 import okhttp3.OkHttpClient;
 import org.hibernate.Session;
-import org.hibernate.SessionBuilder;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.sql.Connection;
-import java.sql.SQLTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.kir138.task1.sql.Connect.HibernateUtil.sessionFactory;
 
 public class App {
     public static void main(String[] args) {
@@ -85,16 +82,12 @@ public class App {
 
         WeatherHistory searchNameCity = weatherService.findCityByName("Male").stream()
                 .map(weatherHistoryMapper::toWeatherHistory)
-                .toList().get(0);
-
-        //List<CityDto> searchNameCity = weatherService.str
-
-        //WeatherHistory ss = searchNameCity.get(0).toWeatherHistory();
+                .toList().getFirst();
 
         userCityFavorites.setWeatherHistory(searchNameCity);
 
         System.out.println("абракакаокаок");
-        System.out.println(weatherService.findCityByName("Moscow").get(0).getCityName());
+        System.out.println(weatherService.findCityByName("Moscow").getFirst().getCityName());
         manyCities.add(userCityFavorites);
 
         Session session = sessionFactory.openSession();

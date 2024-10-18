@@ -27,7 +27,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
-                String cityName = resultSet.getString("city_name");
+                String cityName = resultSet.getString("city_name_history");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
                 Date date = resultSet.getDate("rq_date_time");
@@ -55,7 +55,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 Long idCity = resultSet.getLong("id");
-                String cityName = resultSet.getString("city_name");
+                String cityName = resultSet.getString("city_name_history");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
                 Date date = resultSet.getDate("rq_date_time");
@@ -82,7 +82,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
              ResultSet resultSet = statement.executeQuery(SqlQuery.FIND_ALL_CITY.getQuery())) {
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
-                String cityName = resultSet.getString("city_name");
+                String cityName = resultSet.getString("city_name_history");
                 String weatherConditions = resultSet.getString("weather_conditions");
                 Double temperature = resultSet.getDouble("temperature");
                 Date date = resultSet.getDate("rq_date_time");

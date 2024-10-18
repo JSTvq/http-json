@@ -17,7 +17,16 @@ public class WeatherHistoryMapper {
                 .date(weatherHistory.getRqDateTime())
                 .weatherConditions(weatherHistory.getWeatherConditions())
                 .temperature(weatherHistory.getTemperature())
-                .date(weatherHistory.getRqDateTime())
+                .build();
+    }
+
+    public WeatherHistory toWeatherHistory(CityDto cityDto) {
+        return WeatherHistory.builder()
+                .id(cityDto.getId())
+                .cityName(cityDto.getCityName())
+                .rqDateTime(cityDto.getDate())
+                .weatherConditions(cityDto.getWeatherConditions())
+                .temperature(cityDto.getTemperature())
                 .build();
     }
 

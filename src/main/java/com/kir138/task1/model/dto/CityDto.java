@@ -1,5 +1,6 @@
 package com.kir138.task1.model.dto;
 
+import jakarta.persistence.Entity;
 import lombok.*;
 
 import java.time.LocalDate;

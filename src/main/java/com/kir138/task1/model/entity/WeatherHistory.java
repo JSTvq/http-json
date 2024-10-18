@@ -18,13 +18,14 @@ public class WeatherHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "city_name")
+
+    @Column(name = "city_name_history")
     private String cityName;
 
-    @Column(name = "weather_conditions")
+    @Column(name = "rq_date_time")
     private LocalDate rqDateTime;
 
-    @Column(name = "rq_date_time")
+    @Column(name = "weather_conditions")
     private String weatherConditions;
 
     @Column(name = "temperature")

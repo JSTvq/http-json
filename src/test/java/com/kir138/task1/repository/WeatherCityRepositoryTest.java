@@ -22,6 +22,22 @@ public class WeatherCityRepositoryTest {
     private WeatherCityRepository weatherCityRepository;
     private Connection connection;
 
+    public void createTable(String table) {
+        String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), table);
+
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(createTableSql);
+            connection.commit();
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException("Ошибка при создании таблицы");
+        }
+    }
+
     @BeforeEach
     void setUp() throws SQLException {
         connection = PgConnect.getConenctionTest();
@@ -229,9 +245,9 @@ public class WeatherCityRepositoryTest {
 
     @Disabled
     public void createTableShouldWorkException() throws SQLException {
-        weatherCityRepository.createTable("weather_test");
+        createTable("weather_test");
 
-        assertThatThrownBy(() -> weatherCityRepository.createTable("test"))
+        assertThatThrownBy(() -> createTable("test"))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Ошибка при создании таблицы: ");
 

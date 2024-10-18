@@ -150,20 +150,4 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
             throw new RuntimeException(e);
         }
     }
-
-    public void createTable(String table) {
-        String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), table);
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(createTableSql);
-            connection.commit();
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            throw new RuntimeException("Ошибка при создании таблицы");
-        }
-    }
 }

@@ -16,6 +16,4 @@ public interface CrudRepository<T, K> {
     void deleteCityById(K id);
 
     List<WeatherHistory> findByNameCity(String nameCity);
-
-    void createTable(String table);
 }

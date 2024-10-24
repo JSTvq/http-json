@@ -31,7 +31,7 @@ public class WeatherHistory {
     @Column(name = "temperature")
     private Double temperature;
 
-    @ManyToOne(mapp)
+    @ManyToOne()
     private City city;
 
     @Override

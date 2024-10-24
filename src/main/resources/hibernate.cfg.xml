@@ -16,6 +16,6 @@
         <mapping class="com.kir138.task1.model.entity.WeatherHistory"/>
         <mapping class="com.kir138.task1.model.entity.User"/>
         <mapping class="com.kir138.task1.model.entity.UserCityFavorites"/>
-        <mapping class="com.kir138.task1.model.dto.CityDto"/>
+        <mapping class="com.kir138.task1.model.entity.City"/>
     </session-factory>
 </hibernate-configuration>

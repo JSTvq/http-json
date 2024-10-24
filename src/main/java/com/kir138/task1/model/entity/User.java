@@ -1,9 +1,7 @@
 package com.kir138.task1.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.Set;
@@ -13,6 +11,8 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "users")
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -20,8 +20,12 @@ public class User {
     private Long id;
 
     @Column(nullable = false)
-    private String name; //здесь скорее всего id
+    private String name;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserCityFavorites> favorites;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "city_id", nullable = false, foreignKey = @ForeignKey(name = "fk_user_city"))
+    private City city;
+
+    //@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    //private Set<UserCityFavorites> favorites;
 }

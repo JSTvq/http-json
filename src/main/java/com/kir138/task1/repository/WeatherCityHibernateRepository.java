@@ -78,8 +78,4 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
         }
     }
 
-    @Override
-    public void createTable(String table) {
-
-    }
 }

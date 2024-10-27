@@ -31,7 +31,8 @@ public class WeatherHistory {
     @Column(name = "temperature")
     private Double temperature;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "city_id")
     private City city;
 
     @Override

@@ -112,7 +112,7 @@ public class WeatherService {
         weatherCityRepository.deleteCityById(id);
     }
 
-    public void createTable(String table) {
+    /*public void createTable(String table) {
         weatherCityRepository.createTable(table);
-    }
+    }*/
 }

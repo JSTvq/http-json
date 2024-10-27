@@ -6,6 +6,7 @@ import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.AccuWeatherUrlBuilder;
 import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
+import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.entity.City;
 import com.kir138.task1.model.entity.User;
 import com.kir138.task1.model.entity.WeatherHistory;
@@ -70,12 +71,19 @@ public class App {
         WeatherCityHibernateRepository weatherCityHibernateRepository = new WeatherCityHibernateRepository();
         HibernateWeatherService hibernateWeatherService = new HibernateWeatherService();
 
-        WeatherHistory weatherHistory = WeatherHistory.builder()
+        Map<Long, LocationResponse> listCities = weatherService.listCitiesCache();
+
+        for (LocationResponse cityName : listCities.values()) {
+            //System.out.println(cityName.getLocalizedName());
+            hibernateWeatherService.saveUniq(cityName.getLocalizedName());
+        }
+
+        /*WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName("Nicosia")
                 .temperature(8.6)
-                .build();
+                .build();*/
 
-        hibernateWeatherService.saveUniq(weatherHistory);
+        //hibernateWeatherService.saveUniq(weatherHistory);
 
         //weatherCityHibernateRepository.save();
     }

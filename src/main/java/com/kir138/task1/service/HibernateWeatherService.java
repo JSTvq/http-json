@@ -13,20 +13,23 @@ public class HibernateWeatherService {
             .configure("hibernate.cfg.xml")
             .buildSessionFactory();
 
-    public void saveUniq(WeatherHistory weatherHistory) {
+    public void saveUniq(String weatherHistory) {
         try(Session session = sessionFactory.openSession()) {
             Transaction transaction = session.beginTransaction();
 
             try {
-                String cityName = weatherHistory.getCity().getCityName();
-                City city = session.createQuery("FROM city WHERE city_name = :name", City.class)
+                String cityName = weatherHistory;
+                System.out.println(cityName);
+
+                WeatherHistory weatherHistory1 = session.createQuery("FROM weather WHERE city_name_history = :name", WeatherHistory.class)
                         .setParameter("city_name", cityName)
                         .uniqueResult();
 
-                if (city == null) {
-                    city = weatherHistory.getCity();
-                    session.persist(city);
-                }
+                /*if (weatherHistory1 == null) {
+                    session.persist(weatherHistory1);
+                }*/
+
+                session.persist(weatherHistory1);
                 transaction.commit();
             } catch (Exception e) {
                 throw new RuntimeException(e);

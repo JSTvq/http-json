@@ -31,9 +31,6 @@ public class WeatherHistory {
     @Column(name = "temperature")
     private Double temperature;
 
-    @ManyToOne()
-    private City city;
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

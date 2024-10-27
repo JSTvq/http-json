@@ -11,6 +11,7 @@ import com.kir138.task1.repository.CrudRepository;
 import com.kir138.task1.repository.WeatherCityRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.glassfish.jaxb.core.v2.TODO;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,6 +57,12 @@ public class WeatherService {
                 List<WeatherHistory> cityDtoList = weatherHistoryMapper.weatherForecast(weatherResponse, citySelectedUser);
                 for (WeatherHistory weatherHistory : cityDtoList) {
                     weatherCityRepository.save(weatherHistory);
+
+                    /**
+                     * TODO
+                     * Добавить сюда методы из класса WeatherCityHibernateRepository для проверки есть ли такой
+                     * город в таблице City. Если нет, то добавить в единственном числе.
+                     */
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -112,7 +119,7 @@ public class WeatherService {
         weatherCityRepository.deleteCityById(id);
     }
 
-    public void createTable(String table) {
+    /*public void createTable(String table) {
         weatherCityRepository.createTable(table);
-    }
+    }*/
 }

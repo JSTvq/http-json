@@ -1,16 +1,18 @@
 package com.kir138.task1.repository;
 
+import com.kir138.task1.model.entity.City;
 import com.kir138.task1.model.entity.WeatherHistory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.query.Query;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class WeatherCityHibernateRepository implements CrudRepository<WeatherHistory, Long>{
+public class WeatherCityHibernateRepository implements CrudRepository<WeatherHistory, Long> {
 
     private static final SessionFactory sessionFactory = new Configuration()
             .configure("hibernate.cfg.xml")
@@ -78,4 +80,24 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
         }
     }
 
+    public boolean cityExistsInMainCity(String cityName) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Query<WeatherHistory> mainCityQuery = session.createQuery("from WeatherHistory where cityName = :name"
+                    , WeatherHistory.class);
+            mainCityQuery.setParameter("name", cityName);
+            mainCityQuery.setMaxResults(1);
+            return mainCityQuery.uniqueResult() != null;
+        }
+    }
+
+    public boolean cityExistsInCity(String cityName) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            Query<City> cityQuery = session.createQuery("from City where name = :name", City.class);
+            cityQuery.setParameter("name", cityName);
+            cityQuery.setMaxResults(1);
+            return cityQuery.uniqueResult() != null;
+        }
+    }
 }

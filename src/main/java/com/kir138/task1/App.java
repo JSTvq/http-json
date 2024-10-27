@@ -32,9 +32,9 @@ import static com.kir138.task1.sql.Connect.HibernateUtil.sessionFactory;
 public class App {
     public static void main(String[] args) {
 
-        /*final SessionFactory sessionFactory = new Configuration()
+        final SessionFactory sessionFactory = new Configuration()
                 .configure("hibernate.cfg.xml")
-                .buildSessionFactory();*/
+                .buildSessionFactory();
 
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -67,16 +67,6 @@ public class App {
 
         weatherService.run();
 
-        WeatherCityHibernateRepository weatherCityHibernateRepository = new WeatherCityHibernateRepository();
-        HibernateWeatherService hibernateWeatherService = new HibernateWeatherService();
 
-        WeatherHistory weatherHistory = WeatherHistory.builder()
-                .cityName("Nicosia")
-                .temperature(8.6)
-                .build();
-
-        hibernateWeatherService.saveUniq(weatherHistory);
-
-        //weatherCityHibernateRepository.save();
     }
 }

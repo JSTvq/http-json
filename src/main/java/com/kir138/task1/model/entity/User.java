@@ -3,9 +3,6 @@ package com.kir138.task1.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-import java.util.Set;
-
 @Builder
 @Getter
 @Setter

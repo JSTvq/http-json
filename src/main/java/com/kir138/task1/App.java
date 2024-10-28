@@ -5,29 +5,19 @@ import com.kir138.task1.mapper.WeatherHistoryMapper;
 import com.kir138.task1.model.AccuWeatherClient;
 import com.kir138.task1.model.AccuWeatherUrlBuilder;
 import com.kir138.task1.model.CustomCacheManager;
-import com.kir138.task1.model.dto.CityDto;
-import com.kir138.task1.model.entity.City;
-import com.kir138.task1.model.entity.User;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.repository.CrudRepository;
 import com.kir138.task1.repository.WeatherCityHibernateRepository;
 import com.kir138.task1.repository.WeatherCityRepository;
-import com.kir138.task1.service.HibernateWeatherService;
 import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
 import okhttp3.OkHttpClient;
-import org.hibernate.Session;
-import org.hibernate.SessionBuilder;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 import java.sql.Connection;
-import java.sql.SQLTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-
-import static com.kir138.task1.sql.Connect.HibernateUtil.sessionFactory;
 
 public class App {
     public static void main(String[] args) {
@@ -45,6 +35,7 @@ public class App {
 
         AccuWeatherClient accuWeatherClient = new AccuWeatherClient(okHttpClient, objectMapper, accuWeatherUrlBuilder);
         CustomCacheManager customCacheManager = new CustomCacheManager();
+        WeatherCityHibernateRepository weatherCityHibernateRepository = new WeatherCityHibernateRepository();
         Connection connect = PgConnect.getConnection();
 
         CrudRepository<WeatherHistory, Long> weatherCityRepository = new WeatherCityRepository(connect);
@@ -52,9 +43,9 @@ public class App {
         WeatherHistoryMapper weatherHistoryMapper = new WeatherHistoryMapper();
         Scanner scanner = new Scanner(System.in);
         WeatherService weatherService = new WeatherService(accuWeatherClient, weatherCityRepository, customCacheManager,
-                weatherHistoryMapper, scanner);
+                weatherHistoryMapper, scanner, weatherCityHibernateRepository);
 
-        System.out.println("введите 1 если хотите запустить код через Hibernate, или 2 чтобы запустить код через JDBC");
+        //System.out.println("введите 1 если хотите запустить код через Hibernate, или 2 чтобы запустить код через JDBC");
         //int choiceBD = scanner.nextInt();
         if (true) {
             weatherCityRepository = new WeatherCityHibernateRepository();

@@ -6,12 +6,13 @@ import com.kir138.task1.model.CustomCacheManager;
 import com.kir138.task1.model.dto.CityDto;
 import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
+import com.kir138.task1.model.entity.City;
 import com.kir138.task1.model.entity.WeatherHistory;
 import com.kir138.task1.repository.CrudRepository;
-import com.kir138.task1.repository.WeatherCityRepository;
+import com.kir138.task1.repository.WeatherCityHibernateRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.glassfish.jaxb.core.v2.TODO;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -27,6 +28,7 @@ public class WeatherService {
     private final CustomCacheManager customCacheManager;
     private final WeatherHistoryMapper weatherHistoryMapper;
     private final Scanner scanner;
+    private final WeatherCityHibernateRepository weatherCityHibernateRepository;
 
     public void run() {
         Map<Long, LocationResponse> listCities = listCitiesCache();
@@ -56,7 +58,17 @@ public class WeatherService {
                 WeatherResponse weatherResponse = accuWeatherClient.getWeatherForecast(locationKey);
                 List<WeatherHistory> cityDtoList = weatherHistoryMapper.weatherForecast(weatherResponse, citySelectedUser);
                 for (WeatherHistory weatherHistory : cityDtoList) {
-                    weatherCityRepository.save(weatherHistory);
+                    weatherCityHibernateRepository.save(weatherHistory);
+                    //boolean add1 = weatherCityHibernateRepository.cityExistsInMainCity(weatherHistory.getCityName());
+                    boolean add = weatherCityHibernateRepository.cityExistsInCity(weatherHistory.getCityName());
+                    if (!add) {
+                        weatherCityHibernateRepository.saveNameCity(City.builder()
+                                        .cityName(weatherHistory.getCityName())
+                                        .build());
+                    } else {
+                        System.out.println("Название города уже было сохранено");
+                        break;
+                    }
 
                     /**
                      * TODO

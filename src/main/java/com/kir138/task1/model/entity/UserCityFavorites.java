@@ -1,10 +1,8 @@
 package com.kir138.task1.model.entity;
 
-import com.kir138.task1.model.dto.CityDto;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 
 @Getter
 @Setter

@@ -45,10 +45,25 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
             try {
                 session.merge(weatherHistory);
                 transaction.commit();
+                System.out.println("сохранение успешно");
                 return weatherHistory;
             } catch (Exception e) {
                 transaction.rollback();
                 throw new RuntimeException("сохранение/обновление не произошло");
+            }
+        }
+    }
+
+    public void saveNameCity(City city) {
+        try (Session session = sessionFactory.openSession()) {
+            Transaction transaction = session.beginTransaction();
+            try {
+                session.persist(city);
+                transaction.commit();
+                //return weatherHistory;
+            } catch (Exception e) {
+                transaction.rollback();
+                throw new RuntimeException("сохранение имени не произошло");
             }
         }
     }
@@ -82,7 +97,7 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
 
     public boolean cityExistsInMainCity(String cityName) {
         try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
+            //Transaction transaction = session.beginTransaction();
             Query<WeatherHistory> mainCityQuery = session.createQuery("from WeatherHistory where cityName = :name"
                     , WeatherHistory.class);
             mainCityQuery.setParameter("name", cityName);
@@ -93,8 +108,8 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
 
     public boolean cityExistsInCity(String cityName) {
         try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            Query<City> cityQuery = session.createQuery("from City where name = :name", City.class);
+            //Transaction transaction = session.beginTransaction();
+            Query<City> cityQuery = session.createQuery("from City where cityName = :name", City.class);
             cityQuery.setParameter("name", cityName);
             cityQuery.setMaxResults(1);
             return cityQuery.uniqueResult() != null;

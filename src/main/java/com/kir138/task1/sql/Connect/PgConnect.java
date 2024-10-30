@@ -1,5 +1,8 @@
 package com.kir138.task1.sql.Connect;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -19,14 +22,9 @@ public class PgConnect {
        }
     }
 
-    public static Connection getConenctionTest() {
-        try {
-            String testUrl = "jdbc:postgresql://localhost:5432/postgres";
-            Connection connection = DriverManager.getConnection(testUrl, username, password);
-            connection.setAutoCommit(false);
-            return connection;
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+    public static SessionFactory getSessionFactory() {
+        return new Configuration()
+                .configure("hibernate.cfg.xml")
+                .buildSessionFactory();
     }
 }

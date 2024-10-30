@@ -14,7 +14,7 @@ public class WeatherHistoryMapper {
         return CityDto.builder()
                 .id(weatherHistory.getId())
                 .cityName(weatherHistory.getCityName())
-                .date(weatherHistory.getRqDateTime())
+                .date(weatherHistory.getRqLocalDate())
                 .weatherConditions(weatherHistory.getWeatherConditions())
                 .temperature(weatherHistory.getTemperature())
                 .build();
@@ -24,7 +24,7 @@ public class WeatherHistoryMapper {
         return WeatherHistory.builder()
                 .id(cityDto.getId())
                 .cityName(cityDto.getCityName())
-                .rqDateTime(cityDto.getDate())
+                .rqLocalDate(cityDto.getDate())
                 .weatherConditions(cityDto.getWeatherConditions())
                 .temperature(cityDto.getTemperature())
                 .build();
@@ -44,7 +44,7 @@ public class WeatherHistoryMapper {
 
                     return WeatherHistory.builder()
                         .cityName(cityName)
-                        .rqDateTime(localDate)
+                        .rqLocalDate(localDate)
                         .temperature(temperature)
                         .weatherConditions(weather_conditions)
                         .build();

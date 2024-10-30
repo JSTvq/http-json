@@ -59,22 +59,15 @@ public class WeatherService {
                 List<WeatherHistory> cityDtoList = weatherHistoryMapper.weatherForecast(weatherResponse, citySelectedUser);
                 for (WeatherHistory weatherHistory : cityDtoList) {
                     weatherCityHibernateRepository.save(weatherHistory);
-                    //boolean add1 = weatherCityHibernateRepository.cityExistsInMainCity(weatherHistory.getCityName());
                     boolean add = weatherCityHibernateRepository.cityExistsInCity(weatherHistory.getCityName());
                     if (!add) {
-                        weatherCityHibernateRepository.saveNameCity(City.builder()
+                        weatherCityHibernateRepository.save(City.builder()
                                         .cityName(weatherHistory.getCityName())
                                         .build());
                     } else {
                         System.out.println("Название города уже было сохранено");
                         break;
                     }
-
-                    /**
-                     * TODO
-                     * Добавить сюда методы из класса WeatherCityHibernateRepository для проверки есть ли такой
-                     * город в таблице City. Если нет, то добавить в единственном числе.
-                     */
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

@@ -22,10 +22,6 @@ import java.util.concurrent.TimeUnit;
 public class App {
     public static void main(String[] args) {
 
-        final SessionFactory sessionFactory = new Configuration()
-                .configure("hibernate.cfg.xml")
-                .buildSessionFactory();
-
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
@@ -35,7 +31,8 @@ public class App {
 
         AccuWeatherClient accuWeatherClient = new AccuWeatherClient(okHttpClient, objectMapper, accuWeatherUrlBuilder);
         CustomCacheManager customCacheManager = new CustomCacheManager();
-        WeatherCityHibernateRepository weatherCityHibernateRepository = new WeatherCityHibernateRepository();
+        SessionFactory sessionFactory = PgConnect.getSessionFactory();
+        WeatherCityHibernateRepository weatherCityHibernateRepository = new WeatherCityHibernateRepository(sessionFactory);
         Connection connect = PgConnect.getConnection();
 
         CrudRepository<WeatherHistory, Long> weatherCityRepository = new WeatherCityRepository(connect);
@@ -48,13 +45,15 @@ public class App {
         //System.out.println("введите 1 если хотите запустить код через Hibernate, или 2 чтобы запустить код через JDBC");
         //int choiceBD = scanner.nextInt();
         if (true) {
-            weatherCityRepository = new WeatherCityHibernateRepository();
+            weatherCityRepository = new WeatherCityHibernateRepository(sessionFactory);
         } /*else if (choiceBD == 2) {
             weatherCityRepository = new WeatherCityRepository(connect);
             weatherService.createTable("weather");
         } else {
             throw new RuntimeException("нужная БД не найдена");
         }*/
+
+
 
         weatherService.run();
 

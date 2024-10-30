@@ -37,7 +37,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDate())
+                        .rqLocalDate(date.toLocalDate())
                         .build();
                 weatherHistories.add(weatherHistory);
             }
@@ -65,7 +65,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDate())
+                        .rqLocalDate(date.toLocalDate())
                         .build();
                 return Optional.of(weatherHistory);
             }
@@ -92,7 +92,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                         .cityName(cityName)
                         .weatherConditions(weatherConditions)
                         .temperature(temperature)
-                        .rqDateTime(date.toLocalDate())
+                        .rqLocalDate(date.toLocalDate())
                         .build();
                 cities.add(weatherHistory);
             }
@@ -106,7 +106,7 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
     public WeatherHistory save(WeatherHistory weatherHistory) {
         try (PreparedStatement preparedStatement = connection.prepareStatement(
                 SqlQuery.INSERT_CITY.getQuery(), Statement.RETURN_GENERATED_KEYS)) {
-            LocalDate localDate = weatherHistory.getRqDateTime();
+            LocalDate localDate = weatherHistory.getRqLocalDate();
             Date sqlDate = Date.valueOf(localDate);
 
             preparedStatement.setString(1, weatherHistory.getCityName());
@@ -148,22 +148,6 @@ public class WeatherCityRepository implements CrudRepository<WeatherHistory, Lon
                 throw new RuntimeException(ex);
             }
             throw new RuntimeException(e);
-        }
-    }
-
-    public void createTable(String table) {
-        String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), table);
-
-        try (Statement statement = connection.createStatement()) {
-            statement.execute(createTableSql);
-            connection.commit();
-        } catch (SQLException e) {
-            try {
-                connection.rollback();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-            throw new RuntimeException("Ошибка при создании таблицы");
         }
     }
 }

@@ -22,8 +22,8 @@ public class WeatherHistory {
     @Column(name = "city_name_history")
     private String cityName;
 
-    @Column(name = "rq_date_time")
-    private LocalDate rqDateTime;
+    @Column(name = "rq_local_date")
+    private LocalDate rqLocalDate;
 
     @Column(name = "weather_conditions")
     private String weatherConditions;

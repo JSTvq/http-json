@@ -22,6 +22,10 @@ public class WeatherCityRepositoryTest {
     private WeatherCityRepository weatherCityRepository;
     private Connection connection;
 
+    private static final String url = "jdbc:postgresql://localhost:5432/postgres";
+    private static final String username = "postgres";
+    private static final String password = "12341234";
+
     public void createTable(String table) {
         String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), table);
 
@@ -38,9 +42,20 @@ public class WeatherCityRepositoryTest {
         }
     }
 
+    public Connection getConenctionTest() {
+        try {
+            String testUrl = "jdbc:postgresql://localhost:5432/postgres";
+            Connection connection = DriverManager.getConnection(testUrl, username, password);
+            connection.setAutoCommit(false);
+            return connection;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @BeforeEach
     void setUp() throws SQLException {
-        connection = PgConnect.getConenctionTest();
+        connection = getConenctionTest();
         connection.setAutoCommit(false);
         weatherCityRepository = new WeatherCityRepository(connection);
         String createTableSql = String.format(SqlQuery.CREATE_TABLE.getQuery(), "weather");
@@ -70,7 +85,7 @@ public class WeatherCityRepositoryTest {
         LocalDate localDate = LocalDate.of(2024, 9, 15);
         WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName("Moscow")
-                .rqDateTime(localDate)
+                .rqLocalDate(localDate)
                 .weatherConditions("Небольшая облачность")
                 .temperature(15.0)
                 .build();
@@ -81,11 +96,11 @@ public class WeatherCityRepositoryTest {
         assertThat(findByIdWeatherHistory)
                 .get()
                 .isNotNull()
-                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqDateTime, WeatherHistory::getWeatherConditions,
+                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqLocalDate, WeatherHistory::getWeatherConditions,
                         WeatherHistory::getTemperature)
                 .containsExactly(
                         result.getCityName(),
-                        result.getRqDateTime(),
+                        result.getRqLocalDate(),
                         result.getWeatherConditions(),
                         result.getTemperature()
                 );
@@ -100,7 +115,7 @@ public class WeatherCityRepositoryTest {
         LocalDate localDate = LocalDate.of(2024, 9, 15);
         WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName(null)
-                .rqDateTime(localDate)
+                .rqLocalDate(localDate)
                 .weatherConditions("Небольшая облачность")
                 .temperature(15.0)
                 .build();
@@ -113,7 +128,7 @@ public class WeatherCityRepositoryTest {
         LocalDate localDate = LocalDate.of(2025, 11, 15);
         WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName("Novosibirsk")
-                .rqDateTime(localDate)
+                .rqLocalDate(localDate)
                 .weatherConditions("Небольшая облачность")
                 .temperature(8.0)
                 .build();
@@ -127,11 +142,11 @@ public class WeatherCityRepositoryTest {
                 .isPresent()
                 .get()
                 .isNotNull()
-                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqDateTime, WeatherHistory::getWeatherConditions,
+                .extracting(WeatherHistory::getCityName, WeatherHistory::getRqLocalDate, WeatherHistory::getWeatherConditions,
                         WeatherHistory::getTemperature)
                 .containsExactly(
                         result.getCityName(),
-                        result.getRqDateTime(),
+                        result.getRqLocalDate(),
                         result.getWeatherConditions(),
                         result.getTemperature()
                 );
@@ -141,14 +156,14 @@ public class WeatherCityRepositoryTest {
     public void findAll() {
         WeatherHistory weatherHistory1 = WeatherHistory.builder()
                 .cityName("Novosibirsk")
-                .rqDateTime(LocalDate.of(2020, 3, 22))
+                .rqLocalDate(LocalDate.of(2020, 3, 22))
                 .weatherConditions("Небольшая облачность")
                 .temperature(8.0)
                 .build();
 
         WeatherHistory weatherHistory2 = WeatherHistory.builder()
                 .cityName("Moscow")
-                .rqDateTime(LocalDate.of(2015, 5, 24))
+                .rqLocalDate(LocalDate.of(2015, 5, 24))
                 .weatherConditions("Солнечно")
                 .temperature(15.0)
                 .build();
@@ -164,14 +179,14 @@ public class WeatherCityRepositoryTest {
     public void findAllShouldWorkException() {
         WeatherHistory weatherHistory1 = WeatherHistory.builder()
                 .cityName("Novosibirsk")
-                .rqDateTime(LocalDate.of(2020, 3, 22))
+                .rqLocalDate(LocalDate.of(2020, 3, 22))
                 .weatherConditions("Небольшая облачность")
                 .temperature(8.0)
                 .build();
 
         WeatherHistory weatherHistory2 = WeatherHistory.builder()
                 .cityName("Moscow")
-                .rqDateTime(LocalDate.of(2015, 5, 24))
+                .rqLocalDate(LocalDate.of(2015, 5, 24))
                 .weatherConditions("Солнечно")
                 .temperature(15.0)
                 .build();
@@ -181,7 +196,6 @@ public class WeatherCityRepositoryTest {
 
         List<WeatherHistory> allCities = weatherCityRepository.findAll();
         assertThat(allCities).hasSize(2);
-        //assertEquals(2, allCities.size());
 
         try (Statement stmt = connection.createStatement()) {
             stmt.execute("DROP TABLE weather");
@@ -199,7 +213,7 @@ public class WeatherCityRepositoryTest {
         LocalDate localDate = LocalDate.of(2025, 11, 15);
         WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName("Novosibirsk")
-                .rqDateTime(localDate)
+                .rqLocalDate(localDate)
                 .weatherConditions("Небольшая облачность")
                 .temperature(8.0)
                 .build();
@@ -220,7 +234,7 @@ public class WeatherCityRepositoryTest {
     public void findByName() {
         WeatherHistory weatherHistory = WeatherHistory.builder()
                 .cityName("Novosibirsk")
-                .rqDateTime(LocalDate.of(2022, 4, 20))
+                .rqLocalDate(LocalDate.of(2022, 4, 20))
                 .weatherConditions("Небольшая облачность")
                 .temperature(8.0)
                 .build();
@@ -231,25 +245,5 @@ public class WeatherCityRepositoryTest {
         List<WeatherHistory> weatherHistoryList = weatherCityRepository.findByNameCity(cityName);
 
         assertThat(weatherHistoryList).containsExactlyInAnyOrder(weatherHistory);
-    }
-
-    @Test
-    public void createTable() throws SQLException {
-        createTable("weather_test");
-        DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet tables = metaData.getTables(null, null,
-                "weather_test", null)) {
-            assertThat(tables.next()).isTrue();
-        }
-    }
-
-    @Disabled
-    public void createTableShouldWorkException() throws SQLException {
-        createTable("weather_test");
-
-        assertThatThrownBy(() -> createTable("test"))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Ошибка при создании таблицы: ");
-
     }
 }

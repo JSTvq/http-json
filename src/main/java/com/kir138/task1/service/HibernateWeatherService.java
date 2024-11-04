@@ -40,6 +40,4 @@ public class HibernateWeatherService {
     public void deleteCityById(Long id) {
         weatherCityHibernateRepository.deleteCityById(id);
     }
-
-
 }

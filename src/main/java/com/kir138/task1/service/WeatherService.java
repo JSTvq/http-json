@@ -8,6 +8,7 @@ import com.kir138.task1.model.dto.LocationResponse;
 import com.kir138.task1.model.dto.WeatherResponse;
 import com.kir138.task1.model.entity.City;
 import com.kir138.task1.model.entity.WeatherHistory;
+import com.kir138.task1.repository.CityHibernateRepository;
 import com.kir138.task1.repository.CrudRepository;
 import com.kir138.task1.repository.WeatherCityHibernateRepository;
 import lombok.Getter;
@@ -29,6 +30,7 @@ public class WeatherService {
     private final WeatherHistoryMapper weatherHistoryMapper;
     private final Scanner scanner;
     private final WeatherCityHibernateRepository weatherCityHibernateRepository;
+    private final CityHibernateRepository cityHibernateRepository;
 
     public void run() {
         Map<Long, LocationResponse> listCities = listCitiesCache();
@@ -61,12 +63,9 @@ public class WeatherService {
                     weatherCityHibernateRepository.save(weatherHistory);
                     boolean add = weatherCityHibernateRepository.cityExistsInCity(weatherHistory.getCityName());
                     if (!add) {
-                        weatherCityHibernateRepository.save(City.builder()
+                        cityHibernateRepository.save(City.builder()
                                         .cityName(weatherHistory.getCityName())
                                         .build());
-                    } else {
-                        System.out.println("Название города уже было сохранено");
-                        break;
                     }
                 }
             } catch (IOException e) {

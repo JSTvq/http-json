@@ -22,7 +22,7 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
     @Override
     public List<WeatherHistory> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            String fidAllCitiesQuery = "from weather";
+            String fidAllCitiesQuery = "from WeatherHistory";
             return session.createQuery(fidAllCitiesQuery, WeatherHistory.class).list();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -54,20 +54,6 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
         }
     }
 
-    public City save(City city) {
-        try (Session session = sessionFactory.openSession()) {
-            Transaction transaction = session.beginTransaction();
-            try {
-                session.persist(city);
-                transaction.commit();
-                return city;
-            } catch (Exception e) {
-                transaction.rollback();
-                throw new RuntimeException("сохранение имени не произошло");
-            }
-        }
-    }
-
     @Override
     public void deleteCityById(Long id) {
         try (Session session = sessionFactory.openSession()) {
@@ -85,11 +71,10 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
 
     @Override
     public List<WeatherHistory> findByNameCity(String nameCity) {
-        List<WeatherHistory> cities = new ArrayList<>();
         try (Session session = sessionFactory.openSession()) {
-            WeatherHistory weatherHistory = session.find(WeatherHistory.class, nameCity);
-            cities.add(weatherHistory);
-            return cities;
+            String hql = "from WeatherHistory where cityName = :name";
+            Query<WeatherHistory> find = session.createQuery(hql, WeatherHistory.class);
+            return find.setParameter("name", nameCity).list();
         } catch (Exception e) {
             throw new RuntimeException("найти город по названию не удалось");
         }

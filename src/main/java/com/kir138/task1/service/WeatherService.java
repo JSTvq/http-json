@@ -122,8 +122,4 @@ public class WeatherService {
     public void deleteCityById(Long id) {
         weatherCityRepository.deleteCityById(id);
     }
-
-    /*public void createTable(String table) {
-        weatherCityRepository.createTable(table);
-    }*/
 }

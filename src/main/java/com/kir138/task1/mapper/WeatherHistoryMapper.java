@@ -20,16 +20,6 @@ public class WeatherHistoryMapper {
                 .build();
     }
 
-    public WeatherHistory toWeatherHistory(CityDto cityDto) {
-        return WeatherHistory.builder()
-                .id(cityDto.getId())
-                .cityName(cityDto.getCityName())
-                .rqLocalDate(cityDto.getDate())
-                .weatherConditions(cityDto.getWeatherConditions())
-                .temperature(cityDto.getTemperature())
-                .build();
-    }
-
     public List<WeatherHistory> weatherForecast(WeatherResponse weatherResponse, String cityName) {
 
         DateTimeFormatter inputFormatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;

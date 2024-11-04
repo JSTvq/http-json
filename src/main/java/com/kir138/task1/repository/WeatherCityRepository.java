@@ -4,7 +4,12 @@ import com.kir138.task1.constants.SqlQuery;
 import com.kir138.task1.model.entity.WeatherHistory;
 import lombok.Getter;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

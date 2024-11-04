@@ -4,7 +4,7 @@ import okhttp3.HttpUrl;
 
 public class AccuWeatherUrlBuilder {
     private final static String ACCUWEATHER_HOST = "dataservice.accuweather.com";
-    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV"; //TODO ключ как-то прокинуть по другому
+    private final String apiKey = "oMGV7LUtNeYunfdr0pk6juw9bJNv3LwV";
 
     public HttpUrl buildLocationKeyUrl(String city) {
         return new HttpUrl.Builder()

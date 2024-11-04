@@ -17,10 +17,9 @@ import com.kir138.task1.service.WeatherService;
 import com.kir138.task1.sql.Connect.PgConnect;
 import okhttp3.OkHttpClient;
 import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 
 import java.sql.Connection;
-import java.util.*;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 public class App {

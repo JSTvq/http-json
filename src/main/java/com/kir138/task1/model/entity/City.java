@@ -16,6 +16,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name = "city")
 @Entity
@@ -41,5 +42,18 @@ public class City {
         users.add(user);
         user.setCity(this);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        City city = (City) o;
+        return Objects.equals(id, city.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

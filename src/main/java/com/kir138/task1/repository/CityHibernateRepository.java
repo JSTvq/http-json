@@ -2,11 +2,15 @@ package com.kir138.task1.repository;
 
 import com.kir138.task1.model.entity.City;
 import com.kir138.task1.model.entity.User;
+import com.kir138.task1.model.entity.WeatherHistory;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-public class CityHibernateRepository {
+import java.util.List;
+import java.util.Optional;
+
+public class CityHibernateRepository implements CrudRepository<City, Long> {
 
     private final SessionFactory sessionFactory;
     private final WeatherCityHibernateRepository weatherCityHibernateRepository;
@@ -14,6 +18,16 @@ public class CityHibernateRepository {
     public CityHibernateRepository(SessionFactory sessionFactory, WeatherCityHibernateRepository weatherCityHibernateRepository) {
         this.sessionFactory = sessionFactory;
         this.weatherCityHibernateRepository = weatherCityHibernateRepository;
+    }
+
+    @Override
+    public List<City> findAll() {
+        return null;
+    }
+
+    @Override
+    public Optional<City> findById(Long id) {
+        return Optional.empty();
     }
 
     public City save(City city) {
@@ -28,6 +42,16 @@ public class CityHibernateRepository {
                 throw new RuntimeException("сохранение имени не произошло");
             }
         }
+    }
+
+    @Override
+    public void deleteCityById(Long id) {
+
+    }
+
+    @Override
+    public List<WeatherHistory> findByNameCity(String nameCity) {
+        return null;
     }
 
     public void saveCityIfExistsInWeatherHistory(City city) {

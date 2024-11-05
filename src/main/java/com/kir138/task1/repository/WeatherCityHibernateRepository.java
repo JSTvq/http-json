@@ -32,9 +32,9 @@ public class WeatherCityHibernateRepository implements CrudRepository<WeatherHis
     public Optional<WeatherHistory> findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             WeatherHistory weatherHistory = session.find(WeatherHistory.class, id);
-            return Optional.ofNullable(weatherHistory);
+            return Optional.of(weatherHistory);
         } catch (Exception e) {
-            throw new RuntimeException("найти город по номеру не удалось");
+            throw new IllegalArgumentException("найти город по номеру не удалось");
         }
     }
 
